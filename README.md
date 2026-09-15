@@ -25,6 +25,8 @@
 
 ![架构总览](assets/architecture.svg)
 
+（矢量图 ssets/architecture.svg，位图 ssets/architecture.png）
+
 分层、数据流、运行时检索模型与扩展点的完整说明见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
 
 ## 快速开始
