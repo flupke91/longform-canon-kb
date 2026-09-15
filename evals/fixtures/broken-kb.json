@@ -1,0 +1,85 @@
+{
+  "format": "DEMO-KB-1.0",
+  "manifest": {
+    "kb_name": "demo",
+    "kb_version": "v1",
+    "schema_version": "DEMO-KB-1.0",
+    "permission_status": "UNVERIFIED",
+    "size_budget": { "unit": "bytes", "mode": "utf8_uncompressed", "target_min": 100, "target_max": 1000000, "hard_max": 2000000 }
+  },
+  "encoding": {
+    "record_catalog": "mobile_card_catalog[ordinal] = [ordinal, card_id, kind, priority_rank, is_substantive]",
+    "chapter_refs": "ch -> chapter_catalog[index] (dictionary ordinal, NOT the chapter number)",
+    "card_refs": "refs -> card_id"
+  },
+  "chapter_catalog": [
+    [0, "ch1218", 1218],
+    [1, "ch0411", 411],
+    [2, "ch0007", 7]
+  ],
+  "evidence_catalog": [
+    ["ch1218", "P", null, "micro:demo:1", null],
+    ["ch0411", "Q", "摘录", null, null],
+    ["ch0007", "L", "CH_7", null, null],
+    ["ch0007", "X", null, null, null]
+  ],
+  "calibrated_supplements": [
+    { "_id": 900, "_rank": 4, "name": "本命器", "statement": "本命器与修行者性命交修。" }
+  ],
+  "mobile_card_catalog": [
+    [0, "m000001", "entity", 3, 1],
+    [1, "m000002", "claim", 3, 1],
+    [2, "m000003", "claim", 1, 0],
+    [3, "m000004", "claim", 1, 0],
+    [4, "m000006", "claim", 2, 1],
+    [5, "m000005", "timeline", 2, 1],
+    [6, "anchor:chapter:0", "chapter_anchor", 2, 1],
+    [7, "anchor:chapter:1", "chapter_anchor", 2, 1],
+    [8, "anchor:chapter:2", "chapter_anchor", 2, 1],
+    [9, "anchor:entity:0", "entity_anchor", 2, 1],
+    [10, "anchor:time:0", "time_anchor", 2, 1],
+    [11, "anchor:entity:1", "entity_anchor", 2, 1]
+  ],
+  "entities": [
+    { "_id": "m000001", "name": "主角", "card": "主角：主角，重生者。", "keys": ["主角"], "aliases": ["示例角色"], "ch": [0], "refs": ["m000002"], "ev": [0], "src_ids": ["entity:1"] }
+  ],
+  "claims": [
+    { "_id": "m000002", "name": "示例道具", "card": "示例道具可逆转时光。", "keys": ["示例道具"], "ch": [0], "refs": [], "ev": [0] },
+    { "_id": "m000003", "name": "weak-a", "card": "占位。", "keys": [], "ch": [1], "refs": [], "ev": [1] },
+    { "_id": "m000004", "name": "weak-b", "card": "占位。", "keys": [], "ch": [1], "refs": [], "ev": [1] },
+    { "_id": "m000006", "name": "时间卡", "card": "发生于[object Object]。", "keys": ["时间卡"], "ch": [2], "refs": ["m000099"], "ev": [2] }
+  ],
+  "timeline": [
+    { "_id": "m000005", "name": "t1", "card": "很久以前。", "story_time": "old", "ch": [2], "refs": [], "ev": [3] }
+  ],
+  "character_states": [],
+  "rules": [],
+  "events": [],
+  "relationships": [],
+  "items_and_gu": [],
+  "factions": [],
+  "locations": [],
+  "terms": [],
+  "foreshadows": [],
+  "conflicts": [],
+  "calibrated_cards": [],
+  "anchors": [
+    { "_id": "anchor:chapter:0", "name": "ch1218", "card": "章节锚点 ch1218。", "keys": ["ch1218"], "ch": [0], "refs": ["m000001", "m000002"], "anchor": "chapter", "chapter_id": "ch1218" },
+    { "_id": "anchor:chapter:1", "name": "ch0411", "card": "章节锚点 ch0411。", "keys": ["ch0411"], "ch": [1], "refs": ["m000003"], "anchor": "chapter", "chapter_id": "ch0411" },
+    { "_id": "anchor:chapter:2", "name": "ch0007", "card": "章节锚点 ch0007。", "keys": ["ch0007"], "ch": [2], "refs": ["m000006"], "anchor": "chapter", "chapter_id": "ch0007" },
+    { "_id": "anchor:entity:0", "name": "主角", "card": "主角。", "keys": ["主角"], "ch": [0], "refs": ["m000001"], "anchor": "entity", "entity_ordinal": 0 },
+    { "_id": "anchor:time:0", "name": "old", "card": "old。", "keys": [], "ch": [2], "refs": ["m000005"], "anchor": "time", "story_time": "old" },
+    { "_id": "anchor:entity:1", "name": "主角", "card": "主角。", "keys": ["主角"], "ch": [0], "refs": ["m000001"], "anchor": "entity", "entity_ordinal": 0 }
+  ],
+  "mobile_router": {
+    "entities": { "主角": [9, 11, 6, 0], "示例道具": [1], "weak-a": [2], "weak-b": [3], "时间卡": [4] },
+    "aliases": { "示例角色": [0] },
+    "keys": { "主角": [9, 11, 6, 0], "record_type": [1, 2, 3, 5], "未命名-1": [2], "[object object]": [4], "悬空键": [99] },
+    "chapters": { "0": [6, 0, 1], "1": [7, 2, 3], "2": [8, 5, 4] },
+    "times": { "old": [10, 5], "unknown": [4] },
+    "risks": { "identity": [0, 1] },
+    "anchors": { "chapter": [6, 7, 8], "entity": [9, 11], "time": [10] }
+  },
+  "coverage_and_limits": { "time_anchors": ["old"] },
+  "mobile_stats": { "cards": 12 }
+}

@@ -1,0 +1,56 @@
+name: gates
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, 20, 22]
+    name: node ${{ matrix.node }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Syntax check all scripts
+        run: |
+          for f in scripts/*.js; do
+            node --check "$f"
+          done
+
+      - name: Fixture must FAIL validate (proves the gate is not a no-op)
+        run: |
+          if node scripts/validate-kb.js evals/fixtures/broken-kb.json; then
+            echo "::error::validate-kb.js passed a deliberately broken KB"
+            exit 1
+          fi
+
+      - name: Fixture must FAIL index hygiene
+        run: |
+          if node scripts/index-hygiene.js evals/fixtures/broken-kb.json; then
+            echo "::error::index-hygiene.js passed a deliberately broken KB"
+            exit 1
+          fi
+
+      - name: Fixture must FLAG anchor domination on an entity query
+        run: |
+          if node scripts/query-probe.js evals/fixtures/broken-kb.json --query 主角; then
+            echo "::error::query-probe.js did not flag anchor_dominates_topk"
+            exit 1
+          fi
+
+      - name: Compact must not lose protected records
+        run: |
+          node scripts/compact-kb.js evals/fixtures/broken-kb.json \
+            --out "$RUNNER_TEMP/compacted.json" | tee "$RUNNER_TEMP/compact.json"
+          node -e "
+            const r = require('$RUNNER_TEMP/compact.json');
+            if (r.protected_lost !== 0) { console.error('protected_lost =', r.protected_lost); process.exit(1); }
+          "

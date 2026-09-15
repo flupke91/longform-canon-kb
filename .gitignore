@@ -1,0 +1,34 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+
+# Local scratch output from the gate scripts
+*-report.json
+report.json
+hygiene*.json
+validate*.json
+probe*.json
+compacted*.json
+
+# NEVER commit source texts or derived knowledge bases.
+# These carry third-party copyright and must stay local.
+*.txt
+!requirements.txt
+kb.json
+gur-kb.json
+*/kb.json
+*.skill
+eval-review.html
+*-workspace/

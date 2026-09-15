@@ -1,0 +1,139 @@
+'use strict';
+
+const fs = require('node:fs');
+
+function loadKb(filePath) {
+  const serializedText = fs.readFileSync(filePath, 'utf8');
+  return { kb: JSON.parse(serializedText), serializedText, filePath };
+}
+
+function normalizeToken(value) {
+  return String(value ?? '')
+    .normalize('NFKC')
+    .trim()
+    .replace(/\s+/gu, ' ')
+    .toLowerCase();
+}
+
+function unicodeLength(value) {
+  return [...String(value)].length;
+}
+
+function maxLineBytes(text) {
+  let max = 0;
+  let line = 0;
+  const lines = String(text).split('\n');
+  for (let index = 0; index < lines.length; index += 1) {
+    const size = Buffer.byteLength(lines[index], 'utf8');
+    if (size > max) {
+      max = size;
+      line = index + 1;
+    }
+  }
+  return { max, line };
+}
+
+// Mobile KBs place cards in named sections; the catalog (when present) is the
+// authoritative source for ordering, kind, rank and substantiveness.
+// Table-like sections that are NOT card sections: they hold source records or
+// catalog rows and must never inflate the card ordinal space.
+const NON_CARD_SECTIONS = new Set([
+  'calibrated_supplements', 'chapter_catalog', 'evidence_catalog',
+  'mobile_card_catalog', 'record_catalog', 'cards', 'dictionaries',
+  'evidence_bundles', 'timeline_index'
+]);
+
+function mobileSections(kb) {
+  const known = [
+    'entities', 'character_states', 'claims', 'rules', 'events',
+    'relationships', 'items_and_gu', 'factions', 'locations', 'terms',
+    'foreshadows', 'conflicts', 'timeline', 'calibrated_cards', 'anchors'
+  ];
+  const sections = known.filter(name => Array.isArray(kb[name]));
+  for (const name of Object.keys(kb)) {
+    if (sections.includes(name)) continue;
+    if (!Array.isArray(kb[name])) continue;
+    if (NON_CARD_SECTIONS.has(name)) continue;
+    const sample = kb[name][0];
+    if (sample && typeof sample === 'object' && !Array.isArray(sample) && (sample._id || sample.card)) {
+      sections.push(name);
+    }
+  }
+  return sections;
+}
+
+function isMobileKb(kb) {
+  return Array.isArray(kb.mobile_card_catalog) || Array.isArray(kb.anchors);
+}
+
+function allCards(kb) {
+  if (!isMobileKb(kb)) return [];
+  const catalog = kb.mobile_card_catalog || [];
+  const cards = [];
+  const push = (raw, section) => {
+    const ordinal = cards.length;
+    cards.push({
+      ordinal,
+      id: String(raw._id ?? catalog[ordinal]?.[1] ?? `#${ordinal}`),
+      kind: raw.kind ?? catalog[ordinal]?.[2] ?? section,
+      rank: raw._rank ?? catalog[ordinal]?.[3] ?? 0,
+      substantive: catalog[ordinal]?.[4] === undefined ? null : catalog[ordinal][4] !== 0,
+      section,
+      raw
+    });
+  };
+  for (const section of mobileSections(kb)) {
+    for (const raw of kb[section] || []) push(raw, section);
+  }
+  for (const raw of kb.cards || []) push(raw, 'cards');
+  return cards;
+}
+
+function routerOf(kb) {
+  return kb.mobile_router || kb.retrieval_index || {};
+}
+
+function argValue(args, flag, fallback) {
+  const index = args.indexOf(flag);
+  if (index >= 0 && index + 1 < args.length && !args[index + 1].startsWith('--')) return args[index + 1];
+  const prefixed = args.find(value => value.startsWith(`${flag}=`));
+  return prefixed ? prefixed.slice(flag.length + 1) : fallback;
+}
+
+function argFlag(args, flag) {
+  return args.includes(flag) || args.some(value => value.startsWith(`${flag}=`));
+}
+
+function argNumber(args, flag, fallback) {
+  const raw = argValue(args, flag, undefined);
+  if (raw === undefined) return fallback;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function peakRssMb() {
+  return Math.round((process.memoryUsage().rss / 1048576) * 10) / 10;
+}
+
+function emit(report, options = {}) {
+  const text = `${JSON.stringify(report, null, 2)}\n`;
+  if (options.out) fs.writeFileSync(options.out, text, 'utf8');
+  process.stdout.write(text);
+  if (!report.ok) process.exitCode = 1;
+}
+
+module.exports = {
+  loadKb,
+  normalizeToken,
+  unicodeLength,
+  maxLineBytes,
+  mobileSections,
+  isMobileKb,
+  allCards,
+  routerOf,
+  argValue,
+  argFlag,
+  argNumber,
+  peakRssMb,
+  emit
+};

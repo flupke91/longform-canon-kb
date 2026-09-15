@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1064" viewBox="0 0 1600 1064" font-family="Segoe UI, Noto Sans SC, system-ui, sans-serif">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arwg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#15803d"/>
+    </marker>
+    <marker id="arwo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b45309"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="1064" fill="#ffffff"/>
+  <text x="48" y="52" font-size="30" font-weight="700" fill="#0f172a" letter-spacing="0">longform-canon-kb 架构总览</text>
+  <text x="48" y="80" font-size="15" fill="#475569" letter-spacing="0">超长原文 → 两份可运行资产（kb.json + prompt.md） + 四道可执行门禁</text>
+  <line x1="48" y1="96" x2="1552" y2="96" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- ================= LEFT: BUILD PIPELINE ================= -->
+  <text x="48" y="126" font-size="14" font-weight="700" fill="#0f766e" letter-spacing="1">构建流水线（构建期脚手架，不进交付目录）</text>
+
+  <!-- L0 -->
+  <rect x="48" y="140" width="932" height="82" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <rect x="48" y="140" width="6" height="82" rx="3" fill="#64748b"/>
+  <text x="72" y="166" font-size="13" font-weight="700" fill="#475569" letter-spacing="0.5">L0 源文本层（只读）</text>
+  <rect x="72" y="176" width="884" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="514" y="198" font-size="15" fill="#0f172a" text-anchor="middle">原始长文本 · 章节切分 · source_sha256 指纹校验</text>
+
+  <line x1="514" y1="222" x2="514" y2="250" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- L1 -->
+  <rect x="48" y="252" width="932" height="106" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <rect x="48" y="252" width="6" height="106" rx="3" fill="#0f766e"/>
+  <text x="72" y="278" font-size="13" font-weight="700" fill="#0f766e" letter-spacing="0.5">L1 证据层</text>
+  <rect x="72" y="288" width="286" height="56" rx="6" fill="#ffffff" stroke="#5eead4"/>
+  <text x="215" y="311" font-size="14" fill="#0f172a" text-anchor="middle">证据微块 800–2000 字</text>
+  <text x="215" y="331" font-size="12" fill="#64748b" text-anchor="middle">切在句子 / 对白 / 行动边界</text>
+  <rect x="371" y="288" width="286" height="56" rx="6" fill="#ffffff" stroke="#5eead4"/>
+  <text x="514" y="311" font-size="14" fill="#0f172a" text-anchor="middle">父场景块 3000–8000 字</text>
+  <text x="514" y="331" font-size="12" fill="#64748b" text-anchor="middle">保留完整事件上下文</text>
+  <rect x="670" y="288" width="286" height="56" rx="6" fill="#ffffff" stroke="#5eead4"/>
+  <text x="813" y="311" font-size="14" fill="#0f172a" text-anchor="middle">证据表</text>
+  <text x="813" y="331" font-size="12" fill="#64748b" text-anchor="middle">章节·块·字符区间·哈希·短摘录</text>
+
+  <line x1="514" y1="358" x2="514" y2="386" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- L2 -->
+  <rect x="48" y="388" width="932" height="118" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
+  <rect x="48" y="388" width="6" height="118" rx="3" fill="#b45309"/>
+  <text x="72" y="414" font-size="13" font-weight="700" fill="#b45309" letter-spacing="0.5">L2 抽取层（A0–A9 子 Agent 并行，只输出结构化记录）</text>
+  <rect x="72" y="424" width="212" height="68" rx="6" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="178" y="450" font-size="13.5" fill="#0f172a" text-anchor="middle">世界观 / 地理</text>
+  <text x="178" y="470" font-size="13.5" fill="#0f172a" text-anchor="middle">势力 / 制度</text>
+  <rect x="297" y="424" width="212" height="68" rx="6" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="403" y="450" font-size="13.5" fill="#0f172a" text-anchor="middle">力量体系 / 器物</text>
+  <text x="403" y="470" font-size="13.5" fill="#0f172a" text-anchor="middle">招式 / 资源 / 规则与例外</text>
+  <rect x="522" y="424" width="212" height="68" rx="6" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="628" y="450" font-size="13.5" fill="#0f172a" text-anchor="middle">人物 / 别名 / 身份</text>
+  <text x="628" y="470" font-size="13.5" fill="#0f172a" text-anchor="middle">阶段状态 / 性格 / 情报边界</text>
+  <rect x="747" y="424" width="209" height="68" rx="6" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="851" y="450" font-size="13.5" fill="#0f172a" text-anchor="middle">事件 / 时间 / 因果</text>
+  <text x="851" y="470" font-size="13.5" fill="#0f172a" text-anchor="middle">伏笔 / 揭示顺序</text>
+
+  <line x1="514" y1="506" x2="514" y2="534" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- L3 -->
+  <rect x="48" y="536" width="932" height="98" rx="8" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.5"/>
+  <rect x="48" y="536" width="6" height="98" rx="3" fill="#be123c"/>
+  <text x="72" y="562" font-size="13" font-weight="700" fill="#be123c" letter-spacing="0.5">L3 验证层（直接回读原始证据块，不信任抽取摘要）</text>
+  <rect x="72" y="572" width="436" height="48" rx="6" fill="#ffffff" stroke="#fda4af"/>
+  <text x="290" y="593" font-size="13" fill="#0f172a" text-anchor="middle">五态结论：supported / partially_supported /</text>
+  <text x="290" y="611" font-size="13" fill="#0f172a" text-anchor="middle">contradicted / uncertain / perspective_gap</text>
+  <rect x="520" y="572" width="436" height="48" rx="6" fill="#ffffff" stroke="#fda4af"/>
+  <text x="738" y="593" font-size="13" fill="#0f172a" text-anchor="middle">冲突集</text>
+  <text x="738" y="611" font-size="13" fill="#0f172a" text-anchor="middle">真冲突并列保存双方证据，绝不静默抹平</text>
+
+  <line x1="514" y1="634" x2="514" y2="662" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- L4 -->
+  <rect x="48" y="664" width="932" height="92" rx="8" fill="#eef2ff" stroke="#c7d2fe" stroke-width="1.5"/>
+  <rect x="48" y="664" width="6" height="92" rx="3" fill="#4338ca"/>
+  <text x="72" y="690" font-size="13" font-weight="700" fill="#4338ca" letter-spacing="0.5">L4 编译层</text>
+  <rect x="72" y="700" width="436" height="42" rx="6" fill="#ffffff" stroke="#a5b4fc"/>
+  <text x="290" y="726" font-size="13.5" fill="#0f172a" text-anchor="middle">稳定 ID · chunked 序列化 · 一行一条目录 / 证据 / 章节表</text>
+  <rect x="520" y="700" width="436" height="42" rx="6" fill="#ffffff" stroke="#a5b4fc"/>
+  <text x="738" y="726" font-size="13.5" fill="#0f172a" text-anchor="middle">自引用字节预算（真实 UTF-8 字节，非估算）</text>
+
+  <line x1="514" y1="756" x2="514" y2="784" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- L5 -->
+  <rect x="48" y="786" width="932" height="98" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <rect x="48" y="786" width="6" height="98" rx="3" fill="#15803d"/>
+  <text x="72" y="812" font-size="13" font-weight="700" fill="#15803d" letter-spacing="0.5">L5 运行时资产（交付目录只放这两个）</text>
+  <rect x="72" y="822" width="436" height="48" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+  <text x="290" y="843" font-size="15" font-weight="700" fill="#14532d" text-anchor="middle" font-family="Consolas, monospace">kb.json</text>
+  <text x="290" y="861" font-size="12" fill="#475569" text-anchor="middle">唯一知识输入：事实 + 索引 + 证据定位</text>
+  <rect x="520" y="822" width="436" height="48" rx="6" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+  <text x="738" y="843" font-size="15" font-weight="700" fill="#14532d" text-anchor="middle" font-family="Consolas, monospace">prompt.md</text>
+  <text x="738" y="861" font-size="12" fill="#475569" text-anchor="middle">唯一规则输入：开局 / 检索 / 状态 / 叙事协议</text>
+
+  <line x1="514" y1="884" x2="514" y2="916" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <!-- L6 -->
+  <rect x="48" y="914" width="932" height="76" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <rect x="48" y="914" width="6" height="76" rx="3" fill="#1e293b"/>
+  <text x="72" y="938" font-size="13" font-weight="700" fill="#1e293b" letter-spacing="0.5">L6 质量门禁（零依赖 Node，非零退出码 = 阻断发布）</text>
+  <rect x="72" y="948" width="209" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="176" y="968" font-size="12.5" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">validate-kb.js</text>
+  <rect x="291" y="948" width="209" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="395" y="968" font-size="12.5" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">index-hygiene.js</text>
+  <rect x="510" y="948" width="209" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="614" y="968" font-size="12.5" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">query-probe.js</text>
+  <rect x="729" y="948" width="227" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="842" y="968" font-size="12.5" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">compact-kb.js</text>
+
+  <!-- ================= RIGHT: RUNTIME RETRIEVAL ================= -->
+  <line x1="1000" y1="112" x2="1000" y2="1040" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <text x="1032" y="126" font-size="14" font-weight="700" fill="#0f766e" letter-spacing="1">运行时检索模型（玩家一局游戏的内环）</text>
+
+  <rect x="1032" y="140" width="520" height="44" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="1292" y="167" font-size="14" fill="#0f172a" text-anchor="middle">玩家输入</text>
+  <line x1="1292" y1="184" x2="1292" y2="200" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <rect x="1032" y="200" width="520" height="44" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="1292" y="223" font-size="14" fill="#0f172a" text-anchor="middle">归一化：NFKC · 去空白 · 转小写</text>
+  <text x="1292" y="238" font-size="11.5" fill="#64748b" text-anchor="middle">章节查询先归一化为 chapter_id，再取字典下标</text>
+  <line x1="1292" y1="244" x2="1292" y2="260" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <rect x="1032" y="260" width="520" height="126" rx="6" fill="#f0fdfa" stroke="#5eead4"/>
+  <text x="1292" y="282" font-size="13" font-weight="700" fill="#0f766e" text-anchor="middle">七类倒排索引</text>
+  <rect x="1046" y="292" width="243" height="28" rx="4" fill="#ffffff" stroke="#99f6e4"/>
+  <text x="1167" y="311" font-size="12" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">entities / aliases / keys</text>
+  <rect x="1297" y="292" width="241" height="28" rx="4" fill="#ffffff" stroke="#99f6e4"/>
+  <text x="1417" y="311" font-size="12" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">chapters / times</text>
+  <rect x="1046" y="326" width="243" height="28" rx="4" fill="#ffffff" stroke="#99f6e4"/>
+  <text x="1167" y="345" font-size="12" fill="#0f172a" text-anchor="middle" font-family="Consolas, monospace">risks / anchors</text>
+  <text x="1292" y="376" font-size="11.5" fill="#475569" text-anchor="middle">硬门禁：无空索引 · 无空 posting · 无悬空 posting · 无覆盖空洞</text>
+  <line x1="1292" y1="386" x2="1292" y2="402" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <rect x="1032" y="402" width="520" height="68" rx="6" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="1292" y="425" font-size="13" font-weight="700" fill="#b45309" text-anchor="middle">打分与排序</text>
+  <text x="1292" y="444" font-size="12" fill="#0f172a" text-anchor="middle">正文卡优先 · 锚点降权 −10 · maxAnchors = 1</text>
+  <text x="1292" y="461" font-size="11.5" fill="#64748b" text-anchor="middle">精确人名查询的首命中必须是正文卡，不是指针卡</text>
+  <line x1="1292" y1="470" x2="1292" y2="486" stroke="#475569" stroke-width="2" marker-end="url(#arw)"/>
+
+  <rect x="1032" y="486" width="520" height="44" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="1292" y="513" font-size="14" fill="#0f172a" text-anchor="middle">top-k 卡片 → 正文 + refs 一跳扩展 + ev 证据定位</text>
+  <line x1="1292" y1="530" x2="1292" y2="546" stroke="#15803d" stroke-width="2" marker-end="url(#arwg)"/>
+
+  <rect x="1032" y="546" width="520" height="40" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="1292" y="571" font-size="13.5" font-weight="700" fill="#14532d" text-anchor="middle">事实层只读 · 状态写入会话层</text>
+
+  <!-- numbering spaces -->
+  <text x="1032" y="622" font-size="14" font-weight="700" fill="#be123c" letter-spacing="1">四套编号空间必须分开（最贵的一课）</text>
+  <rect x="1032" y="636" width="520" height="168" rx="6" fill="#fff1f2" stroke="#fecdd3"/>
+  <rect x="1046" y="650" width="243" height="140" rx="5" fill="#ffffff" stroke="#fda4af"/>
+  <text x="1167" y="672" font-size="12.5" font-weight="700" fill="#0f172a" text-anchor="middle">card ordinal</text>
+  <text x="1167" y="692" font-size="11.5" fill="#475569" text-anchor="middle">卡片数组下标</text>
+  <text x="1167" y="711" font-size="11.5" fill="#475569" text-anchor="middle">路由 posting 存这个</text>
+  <text x="1167" y="740" font-size="12.5" font-weight="700" fill="#0f172a" text-anchor="middle">chapter ordinal</text>
+  <text x="1167" y="760" font-size="11.5" fill="#475569" text-anchor="middle">章节字典下标</text>
+  <text x="1167" y="779" font-size="11.5" fill="#475569" text-anchor="middle">ch 字段存这个</text>
+  <rect x="1297" y="650" width="241" height="140" rx="5" fill="#ffffff" stroke="#fda4af"/>
+  <text x="1417" y="672" font-size="12.5" font-weight="700" fill="#be123c" text-anchor="middle">card_id</text>
+  <text x="1417" y="692" font-size="11.5" fill="#475569" text-anchor="middle">稳定卡片标识</text>
+  <text x="1417" y="711" font-size="11.5" fill="#b45309" text-anchor="middle">禁止公式反推</text>
+  <text x="1417" y="740" font-size="12.5" font-weight="700" fill="#0f172a" text-anchor="middle">chapter number</text>
+  <text x="1417" y="760" font-size="11.5" fill="#475569" text-anchor="middle">人类可读章节号</text>
+  <text x="1417" y="779" font-size="11.5" fill="#475569" text-anchor="middle">≠ chapter ordinal</text>
+
+  <!-- feedback loop -->
+  <path d="M 1032 566 L 1006 566 L 1006 300 L 1032 300" fill="none" stroke="#b45309" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arwo)"/>
+  <text x="1000" y="430" font-size="11" fill="#b45309" text-anchor="middle" transform="rotate(-90 1000 430)">应用端反馈先证伪</text>
+
+  <!-- footer -->
+  <rect x="1032" y="822" width="520" height="168" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="1050" y="848" font-size="13" font-weight="700" fill="#1e293b">发布门禁（全部成立才发布）</text>
+  <text x="1050" y="874" font-size="12" fill="#334155">结构    JSON 可解析 · 引用无悬空 · 无空索引</text>
+  <text x="1050" y="896" font-size="12" fill="#334155">证据    高优先级事实有定位 · 高风险双证据</text>
+  <text x="1050" y="918" font-size="12" fill="#334155">覆盖    每章节 / 实体 / 时间点都有入口锚点</text>
+  <text x="1050" y="940" font-size="12" fill="#334155">检索    固定查询集 top-k 命中且首命中为正文卡</text>
+  <text x="1050" y="962" font-size="12" fill="#334155">体积    真实 UTF-8 字节落在区间内 · 行长受限</text>
+  <text x="1050" y="984" font-size="12" fill="#334155">可复现  同输入重跑逐字节一致 · 上层文件哈希未变</text>
+</svg>

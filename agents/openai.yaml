@@ -1,0 +1,4 @@
+interface:
+  display_name: "Longform Canon KB"
+  short_description: "Turn million-word fiction into a playable KB plus prompt"
+  default_prompt: "Use $longform-canon-kb to build or repair a two-file AI story-game knowledge base from long-form fiction, and to optimize its retrieval and mobile size."

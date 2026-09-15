@@ -1,0 +1,7 @@
+[
+  "主角",
+  { "query": "ch0001", "expect_any": ["m000001", "m000002"] },
+  { "query": "chapter-time:ch0003", "expect_any": ["m000005"] },
+  { "query": "示例角色", "expect_any": ["m000001"] },
+  { "query": "旧时", "expect_any": ["m000005"] }
+]
