@@ -71,6 +71,9 @@ node scripts/apply-patch.js kb.json --ch ch.jsonl --quotes quotes.jsonl --out ou
 # 性能基准：导入耗时 / 体积 / 检索延迟与召回，可与基线比对（Node >= 22.5）
 node scripts/bench-kb.js kb.json --out bench.json
 node scripts/bench-kb.js kb.json --baseline evals/bench/baseline-gur-final.json
+
+# 质量基准：按人设/剧情/道具/世界观分别量命中、上下文命中与原文依据
+node scripts/bench-quality.js kb.json --novel novel.txt --per-bucket 20
 ```
 
 脚本接受 `<kb.json>` 作为第一个位置参数（flag 可以写在路径前面），输出 JSON 到 stdout，**非零退出码表示门禁失败**，可直接接进 CI。

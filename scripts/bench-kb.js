@@ -246,6 +246,10 @@ function buildFts(db) {
 // query side (mirror of the mobile scoring path, lexical only)
 
 const CJK_STOP = new Set(['的', '了', '是', '在', '和', '有', '就', '不', '也', '这', '那', '他', '她', '我', '你']);
+// Characters that only ever show up in the question wrapper ("X是谁", "X有什么用").
+// A grammar that contains one of them is not a name and must not become a term,
+// otherwise a 2-character name turns into a 3-character phrase that matches nothing.
+const QUESTION_CHARS = new Set(['谁', '什', '么', '怎', '样', '介', '绍', '说', '吗', '呢', '吧', '啊', '呀', '哪', '些', '个', '吗']);
 
 function tokenize(text) {
   const terms = new Set();
@@ -256,9 +260,16 @@ function tokenize(text) {
       continue;
     }
     const chars = [...piece];
+    const clean = gram => ![...gram].some(ch => QUESTION_CHARS.has(ch));
     for (const ch of chars) if (!CJK_STOP.has(ch)) terms.add(ch);
-    for (let i = 0; i + 1 < chars.length; i += 1) terms.add(chars[i] + chars[i + 1]);
-    for (let i = 0; i + 2 < chars.length; i += 1) terms.add(chars[i] + chars[i + 1] + chars[i + 2]);
+    for (let i = 0; i + 1 < chars.length; i += 1) {
+      const gram = chars[i] + chars[i + 1];
+      if (clean(gram)) terms.add(gram);
+    }
+    for (let i = 0; i + 2 < chars.length; i += 1) {
+      const gram = chars[i] + chars[i + 1] + chars[i + 2];
+      if (clean(gram)) terms.add(gram);
+    }
   }
   return [...terms].filter(term => term.length >= 1).slice(0, 24);
 }

@@ -1,6 +1,6 @@
 {
  "ok": true,
- "quality_version": 1,
+ "quality_version": 2,
  "kb": "G:\\workplace\\scratch\\gur-kb-final.json",
  "novel": "G:\\workplace\\gur-backfill\\大爱-2.txt",
  "bytes": 23241712,
@@ -10,1020 +10,291 @@
   "parents": 3707,
   "chapters": 2356,
   "chapters_with_cards": 2331,
-  "machine_named_cards": 19676,
-  "compound_names": 915
- },
- "metrics": {
-  "coverage_chapters": 0.989,
   "cards_with_quote": 0.661,
-  "retrieval_hit5": 0.733,
-  "grounded_top1": 0.6,
-  "chapter_placement": 0.972,
-  "spoiler_leak": 0.8,
-  "spoiler_leak_chunks": 0.05,
-  "spoiler_leak_parents": 0.8,
-  "stability_top5": 0.408,
-  "fidelity_numbers": null
+  "machine_named_cards": 19676,
+  "machine_named_ratio": 0.492
+ },
+ "immersion": 0.678,
+ "weakest": {
+  "bucket": "世界观",
+  "score": 0.5
+ },
+ "buckets": {
+  "persona": {
+   "label": "人设",
+   "sampled": 20,
+   "hit5": 0.8,
+   "context_hit": 0.8,
+   "grounded": 0.7,
+   "immersion": 0.765,
+   "chapter_placement": 1,
+   "fact_support": null,
+   "stability": 0.552,
+   "context_chars_median": 4564,
+   "spoiler_leak_chunk_scenarios": 4,
+   "spoiler_leak_parent_scenarios": 17,
+   "misses": [
+    {
+     "asked": "蛮图",
+     "chapter": 444,
+     "top": [],
+     "inContext": false
+    },
+    {
+     "asked": "潘平",
+     "chapter": 544,
+     "top": [],
+     "inContext": false
+    },
+    {
+     "asked": "鲨魔",
+     "chapter": 981,
+     "top": [],
+     "inContext": false
+    },
+    {
+     "asked": "刘浩",
+     "chapter": 1784,
+     "top": [
+      "m030691",
+      "m038450"
+     ],
+     "inContext": false
+    }
+   ]
+  },
+  "plot": {
+   "label": "剧情",
+   "sampled": 20,
+   "hit5": 0.8,
+   "context_hit": 0.8,
+   "grounded": 0.7,
+   "immersion": 0.765,
+   "chapter_placement": 1,
+   "fact_support": 0,
+   "stability": 0.426,
+   "context_chars_median": 4623,
+   "spoiler_leak_chunk_scenarios": 2,
+   "spoiler_leak_parent_scenarios": 16,
+   "misses": [
+    {
+     "asked": "汪家",
+     "chapter": 478,
+     "top": [],
+     "inContext": false
+    },
+    {
+     "asked": "商家",
+     "chapter": 1072,
+     "top": [
+      "m014080"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "影宗",
+     "chapter": 1404,
+     "top": [
+      "m037327"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "中洲十大古派",
+     "chapter": 1677,
+     "top": [
+      "m000758",
+      "m000205",
+      "m000203"
+     ],
+     "inContext": false
+    }
+   ]
+  },
+  "item": {
+   "label": "道具",
+   "sampled": 20,
+   "hit5": 0.7,
+   "context_hit": 0.7,
+   "grounded": 0.65,
+   "immersion": 0.682,
+   "chapter_placement": 0.947,
+   "fact_support": null,
+   "stability": 0.635,
+   "context_chars_median": 4551,
+   "spoiler_leak_chunk_scenarios": 2,
+   "spoiler_leak_parent_scenarios": 18,
+   "misses": [
+    {
+     "asked": "三王标志性蛊虫与能力",
+     "chapter": 324,
+     "top": [
+      "m000119",
+      "m025148"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "万星飞萤",
+     "chapter": 793,
+     "top": [
+      "m000068",
+      "m026881",
+      "m026976"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "薄青剑道仙蛊",
+     "chapter": 1032,
+     "top": [
+      "m003911",
+      "m027773",
+      "m027642"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "盟约",
+     "chapter": 1269,
+     "top": [
+      "m023721",
+      "m009545"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "第二空窍蛊",
+     "chapter": 1853,
+     "top": [
+      "m003515",
+      "m003516",
+      "m025332"
+     ],
+     "inContext": false
+    }
+   ]
+  },
+  "world": {
+   "label": "世界观",
+   "sampled": 20,
+   "hit5": 0.5,
+   "context_hit": 0.5,
+   "grounded": 0.5,
+   "immersion": 0.5,
+   "chapter_placement": 1,
+   "fact_support": null,
+   "stability": 0.536,
+   "context_chars_median": 4598,
+   "spoiler_leak_chunk_scenarios": 4,
+   "spoiler_leak_parent_scenarios": 15,
+   "misses": [
+    {
+     "asked": "资质",
+     "chapter": 4,
+     "top": [
+      "m001752",
+      "m034151",
+      "m033805"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "风险",
+     "chapter": 730,
+     "top": [],
+     "inContext": false
+    },
+    {
+     "asked": "战斗",
+     "chapter": 2308,
+     "top": [
+      "m012935",
+      "m013097"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "六个猎户",
+     "chapter": 12,
+     "top": [
+      "m034098"
+     ],
+     "inContext": false
+    },
+    {
+     "asked": "九转仙蛊",
+     "chapter": 1027,
+     "top": [
+      "m000276",
+      "m027464",
+      "m027757"
+     ],
+     "inContext": false
+    }
+   ]
+  }
  },
  "gates": [
   {
-   "name": "retrieval_hit5",
-   "value": 0.733,
-   "pass": false,
-   "detail": "按名字提问，5 条内应能找到这张卡"
-  },
-  {
-   "name": "grounded_top1",
-   "value": 0.6,
+   "name": "immersion",
+   "value": 0.678,
    "pass": true,
-   "detail": "置顶结果应有可回指原文的句子"
+   "detail": "四类卡片的综合得分（命中 / 上下文命中 / 原文依据）"
   },
   {
-   "name": "spoiler_leak_chunks",
-   "value": 0.05,
-   "pass": false,
-   "detail": "检索结果本身不得越过章节上限"
-  },
-  {
-   "name": "chapter_placement",
-   "value": 0.972,
+   "name": "context_hit:persona",
+   "value": 0.8,
    "pass": true,
-   "detail": "引文所在章应与卡片声明章一致"
+   "detail": "人设类问题的上下文里应含正确卡片"
   },
   {
-   "name": "stability_top5",
-   "value": 0.408,
+   "name": "grounded:persona",
+   "value": 0.7,
+   "pass": true,
+   "detail": "人设类问题的上下文应带原文原句"
+  },
+  {
+   "name": "context_hit:plot",
+   "value": 0.8,
+   "pass": true,
+   "detail": "剧情类问题的上下文里应含正确卡片"
+  },
+  {
+   "name": "grounded:plot",
+   "value": 0.7,
+   "pass": true,
+   "detail": "剧情类问题的上下文应带原文原句"
+  },
+  {
+   "name": "context_hit:item",
+   "value": 0.7,
+   "pass": true,
+   "detail": "道具类问题的上下文里应含正确卡片"
+  },
+  {
+   "name": "grounded:item",
+   "value": 0.65,
+   "pass": true,
+   "detail": "道具类问题的上下文应带原文原句"
+  },
+  {
+   "name": "context_hit:world",
+   "value": 0.5,
    "pass": false,
-   "detail": "三种问法应落到相近的上下文"
+   "detail": "世界观类问题的上下文里应含正确卡片"
+  },
+  {
+   "name": "grounded:world",
+   "value": 0.5,
+   "pass": true,
+   "detail": "世界观类问题的上下文应带原文原句"
   }
  ],
- "fidelity_samples": [],
  "judge": null,
- "scenarios": [
-  {
-   "chapter": 1,
-   "asked": "古月族长",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m023303",
-    "m001032",
-    "m034152"
-   ],
-   "ms": 10.62
-  },
-  {
-   "chapter": 40,
-   "asked": "化石探测限制",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": true,
-   "leakedParent": true,
-   "top": [
-    "m024366",
-    "m006376",
-    "m006648"
-   ],
-   "ms": 6.95
-  },
-  {
-   "chapter": 78,
-   "asked": "古月家族政治格局",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m001012",
-    "m013649",
-    "m012693"
-   ],
-   "ms": 2.95
-  },
-  {
-   "chapter": 116,
-   "asked": "隐石蛊",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004552",
-    "m024507",
-    "m013715"
-   ],
-   "ms": 2.35
-  },
-  {
-   "chapter": 154,
-   "asked": "赤钟",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": true,
-   "leakedParent": true,
-   "top": [
-    "m024381",
-    "m013576",
-    "m025596"
-   ],
-   "ms": 2.01
-  },
-  {
-   "chapter": 192,
-   "asked": "天鹤上人",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m001586",
-    "m005178",
-    "m024736"
-   ],
-   "ms": 5.77
-  },
-  {
-   "chapter": 230,
-   "asked": "骨肉团圆蛊系列",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004759",
-    "m024895",
-    "m024877"
-   ],
-   "ms": 2.76
-  },
-  {
-   "chapter": 268,
-   "asked": "毒誓蛊",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m024970",
-    "m002681",
-    "m002682"
-   ],
-   "ms": 3.75
-  },
-  {
-   "chapter": 306,
-   "asked": "魏央",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m014279",
-    "m014173",
-    "m024735"
-   ],
-   "ms": 1.67
-  },
-  {
-   "chapter": 344,
-   "asked": "李闲",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m024735",
-    "m024381",
-    "m013576"
-   ],
-   "ms": 2.63
-  },
-  {
-   "chapter": 382,
-   "asked": "王逍",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m025362",
-    "m014575",
-    "m008981"
-   ],
-   "ms": 2.1
-  },
-  {
-   "chapter": 458,
-   "asked": "无常骨蛊",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m002328",
-    "m025667",
-    "m014865"
-   ],
-   "ms": 2.4
-  },
-  {
-   "chapter": 496,
-   "asked": "画意蛊",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m025800",
-    "m015011",
-    "m025596"
-   ],
-   "ms": 1.48
-  },
-  {
-   "chapter": 535,
-   "asked": "常飚",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m025596",
-    "m024735",
-    "m024381"
-   ],
-   "ms": 1.76
-  },
-  {
-   "chapter": 573,
-   "asked": "葛光",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m024735",
-    "m015247",
-    "m025596"
-   ],
-   "ms": 2.27
-  },
-  {
-   "chapter": 611,
-   "asked": "察运蛊",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m026213",
-    "m001784",
-    "m026197"
-   ],
-   "ms": 2.98
-  },
-  {
-   "chapter": 649,
-   "asked": "万我正式命名",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m000067",
-    "m026340",
-    "m024735"
-   ],
-   "ms": 4.71
-  },
-  {
-   "chapter": 687,
-   "asked": "楚度",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m026181",
-    "m015409",
-    "m036488"
-   ],
-   "ms": 2.64
-  },
-  {
-   "chapter": 725,
-   "asked": "星澜巨柱",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m002389",
-    "m026629",
-    "m009388"
-   ],
-   "ms": 2.55
-  },
-  {
-   "chapter": 763,
-   "asked": "赤煞神舟",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m026783",
-    "m004196",
-    "m004197"
-   ],
-   "ms": 3.06
-  },
-  {
-   "chapter": 801,
-   "asked": "茅草屋",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m026904",
-    "m016253",
-    "m034683"
-   ],
-   "ms": 3.54
-  },
-  {
-   "chapter": 839,
-   "asked": "凶雷恶人",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m006069",
-    "m000766",
-    "m027049"
-   ],
-   "ms": 4.04
-  },
-  {
-   "chapter": 877,
-   "asked": "六幻星身",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m027209",
-    "m027210",
-    "m016523"
-   ],
-   "ms": 2.14
-  },
-  {
-   "chapter": 915,
-   "asked": "元始仙尊",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m027340",
-    "m026986",
-    "m009271"
-   ],
-   "ms": 6.46
-  },
-  {
-   "chapter": 953,
-   "asked": "回风子",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m006232",
-    "m001226",
-    "m001227"
-   ],
-   "ms": 3.84
-  },
-  {
-   "chapter": 991,
-   "asked": "盗天真传空间",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m003336",
-    "m017045",
-    "m034806"
-   ],
-   "ms": 7.52
-  },
-  {
-   "chapter": 1029,
-   "asked": "智慧蛊",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m033772",
-    "m000824",
-    "m027766"
-   ],
-   "ms": 6.18
-  },
-  {
-   "chapter": 1067,
-   "asked": "超级蛊阵影宗地渊",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": true,
-   "leakedParent": true,
-   "top": [
-    "m027881",
-    "m016838",
-    "m037330"
-   ],
-   "ms": 7.26
-  },
-  {
-   "chapter": 1105,
-   "asked": "宫迩",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m006376",
-    "m024735",
-    "m025596"
-   ],
-   "ms": 5.58
-  },
-  {
-   "chapter": 1143,
-   "asked": "石宗",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m025596",
-    "m013576",
-    "m014765"
-   ],
-   "ms": 3.1
-  },
-  {
-   "chapter": 1181,
-   "asked": "刘家太上大长老",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m000776",
-    "m006618",
-    "m004896"
-   ],
-   "ms": 9.02
-  },
-  {
-   "chapter": 1220,
-   "asked": "见面曾相识",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m027582",
-    "m026686",
-    "m028492"
-   ],
-   "ms": 8.43
-  },
-  {
-   "chapter": 1258,
-   "asked": "天地秘境与九转仙蛊",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m001447",
-    "m034996",
-    "m034997"
-   ],
-   "ms": 9.65
-  },
-  {
-   "chapter": 1296,
-   "asked": "坚持仙蛊运用法门",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m028791",
-    "m028751",
-    "m028729"
-   ],
-   "ms": 2.04
-  },
-  {
-   "chapter": 1334,
-   "asked": "紫山真君紫",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m018642",
-    "m003539",
-    "m006843"
-   ],
-   "ms": 7.01
-  },
-  {
-   "chapter": 1372,
-   "asked": "影宗早期",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m029019",
-    "m018642",
-    "m006376"
-   ],
-   "ms": 3.92
-  },
-  {
-   "chapter": 1410,
-   "asked": "陆畏因",
-   "hit": false,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004519",
-    "m006921",
-    "m018985"
-   ],
-   "ms": 5.93
-  },
-  {
-   "chapter": 1448,
-   "asked": "鬼官衣",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004776",
-    "m029354",
-    "m006376"
-   ],
-   "ms": 3.89
-  },
-  {
-   "chapter": 1487,
-   "asked": "逆流护身印",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004276",
-    "m029456",
-    "m018904"
-   ],
-   "ms": 7.9
-  },
-  {
-   "chapter": 1525,
-   "asked": "大盗仙蛊",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m001402",
-    "m029568",
-    "m038022"
-   ],
-   "ms": 5.33
-  },
-  {
-   "chapter": 1563,
-   "asked": "静眠电蟒",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m029729",
-    "m019505",
-    "m027135"
-   ],
-   "ms": 3.59
-  },
-  {
-   "chapter": 1601,
-   "asked": "铁区中",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004401",
-    "m019656",
-    "m007117"
-   ],
-   "ms": 3.17
-  },
-  {
-   "chapter": 1639,
-   "asked": "白相洞天资源",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m003263",
-    "m030065",
-    "m006376"
-   ],
-   "ms": 5.95
-  },
-  {
-   "chapter": 1677,
-   "asked": "薛屠刀",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m003913",
-    "m007236",
-    "m019955"
-   ],
-   "ms": 2.55
-  },
-  {
-   "chapter": 1715,
-   "asked": "星宿意志",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m002370",
-    "m007358",
-    "m030324"
-   ],
-   "ms": 4.75
-  },
-  {
-   "chapter": 1753,
-   "asked": "蒙屠",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m006376",
-    "m006648",
-    "m024735"
-   ],
-   "ms": 2.16
-  },
-  {
-   "chapter": 1791,
-   "asked": "羊枯",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m006376",
-    "m006648",
-    "m024735"
-   ],
-   "ms": 1.31
-  },
-  {
-   "chapter": 1829,
-   "asked": "吴帅之父",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m001109",
-    "m038538",
-    "m007570"
-   ],
-   "ms": 4.92
-  },
-  {
-   "chapter": 1867,
-   "asked": "人形云雾云人",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m000399",
-    "m007637",
-    "m035351"
-   ],
-   "ms": 3.07
-  },
-  {
-   "chapter": 1905,
-   "asked": "领土蛊土道七转仙蛊",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004683",
-    "m031187",
-    "m021050"
-   ],
-   "ms": 1
-  },
-  {
-   "chapter": 1943,
-   "asked": "仙道杀招·命运歌",
-   "hit": false,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m004880",
-    "m026801",
-    "m026954"
-   ],
-   "ms": 7.17
-  },
-  {
-   "chapter": 1981,
-   "asked": "龙宫",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": false,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m018788",
-    "m020185",
-    "m020933"
-   ],
-   "ms": 4.77
-  },
-  {
-   "chapter": 2019,
-   "asked": "萧荷尖",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m007930",
-    "m021549",
-    "m038831"
-   ],
-   "ms": 4.75
-  },
-  {
-   "chapter": 2059,
-   "asked": "青仇的诞生",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m031718",
-    "m006376",
-    "m006648"
-   ],
-   "ms": 4.25
-  },
-  {
-   "chapter": 2097,
-   "asked": "十大古派放养魔修制度",
-   "hit": false,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m004648",
-    "m000208",
-    "m000758"
-   ],
-   "ms": 13.98
-  },
-  {
-   "chapter": 2135,
-   "asked": "卫神经",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m006469",
-    "m008156",
-    "m000972"
-   ],
-   "ms": 2.7
-  },
-  {
-   "chapter": 2173,
-   "asked": "刘长",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m011395",
-    "m027642",
-    "m029822"
-   ],
-   "ms": 1.92
-  },
-  {
-   "chapter": 2211,
-   "asked": "混沌",
-   "hit": false,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": false,
-   "leakedChunk": false,
-   "leakedParent": false,
-   "top": [
-    "m006376",
-    "m006648",
-    "m024735"
-   ],
-   "ms": 1.72
-  },
-  {
-   "chapter": 2249,
-   "asked": "血海老祖",
-   "hit": true,
-   "grounded": true,
-   "chapterCorrect": true,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m032557",
-    "m004023",
-    "m004024"
-   ],
-   "ms": 6.41
-  },
-  {
-   "chapter": 2287,
-   "asked": "萧七星",
-   "hit": true,
-   "grounded": false,
-   "chapterCorrect": null,
-   "leaked": true,
-   "leakedChunk": false,
-   "leakedParent": true,
-   "top": [
-    "m005475",
-    "m031581",
-    "m008532"
-   ],
-   "ms": 4.57
-  }
- ],
  "env": {
   "node": "v22.22.2",
   "cpu": "AMD Ryzen 5 5600 6-Core Processor"
  },
- "note": "Reference quality run for gur-kb-final.json against the novel (2,337 chapters). Scenario set is generated from chapter samples, so it is reproducible only with the same KB."
+ "note": "Reference quality run for gur-kb-final.json, 20 scenarios per category, against the 2,337-chapter novel."
 }

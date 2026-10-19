@@ -146,7 +146,7 @@ Chatbox 侧会读什么、不会读什么，见 `references/chatbox-runtime.md`�
 
 ## 脚本
 
-九个脚本（无依赖，Node 18+；bench-kb 需 Node 22.5+）覆盖编译后的验证、压缩、迁移、原文补全与性能基准。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
+十个脚本（无依赖，Node 18+；bench-kb / bench-quality 需 Node 22.5+）覆盖编译后的验证、压缩、迁移、原文补全与性能基准。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
 
 ```bash
 # 结构与引用门禁；桌面版与手机版自动识别
@@ -178,6 +178,9 @@ node scripts/apply-patch.js kb.json --ch ch.jsonl --quotes quotes.jsonl --out ou
 # 性能基准：导入 / 体积 / 检索延迟与召回，可与基线比对
 node scripts/bench-kb.js kb.json --out bench.json
 node scripts/bench-kb.js kb.json --baseline evals/bench/baseline-gur-final.json
+
+# 质量基准：人设/剧情/道具/世界观四类分别量命中、上下文命中与原文依据
+node scripts/bench-quality.js kb.json --novel novel.txt --per-bucket 20
 ```
 
 查询集支持两种写法：纯字符串列表，或 `{"query":"主角","expect_any":["m000001"]}` 这种带期望的形式。带期望的用例允许一跳 `refs` 容错。

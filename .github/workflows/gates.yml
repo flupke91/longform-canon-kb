@@ -117,7 +117,7 @@ jobs:
         if: matrix.node == 22
         run: |
           node scripts/bench-quality.js evals/fixtures/mini-valid-kb.json \
-            --samples 2 --no-gate --out "$RUNNER_TEMP/quality.json"
+            --per-bucket 1 --no-gate --out "$RUNNER_TEMP/quality.json"
           node -e "
             const r = require(process.env.RUNNER_TEMP + '/quality.json');
             if (!r.metrics || typeof r.metrics.retrieval_hit5 !== 'number') {
