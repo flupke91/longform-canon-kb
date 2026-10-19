@@ -118,3 +118,19 @@ node scripts/validate-chatbox.js kb.json --out chatbox-report.json
 - `issues` 为空：未识别、卡片落在不被读取的 section、锚点 id 形状不符、章节号无法映射。
 - `cards.cards_folded / cards_weak / cards_over_child_size` 不应随时间上涨。
 - `weight.unread_by_chatbox_bytes`：这是可以还给事实层的预算。
+
+## 8. 已有包的迁移（不重抽）
+
+一份已经编译好的包通常不需要回小说重跑，先分清三类问题：
+
+| 症状 | 能否只改包 | 做法 |
+| --- | --- | --- |
+| section 内章节乱序，parent 混合第 1 章和第 900 章 | 能 | `migrate-kb.js --sort-sections`（重排 catalog/router 序号，posting 原样保留） |
+| `story_time` 只在时间锚点上，卡片没有 | 能 | `migrate-kb.js --backfill-story-time`（沿锚点 refs 回填，卡片自带值优先） |
+| 卡片缺 `ch` | 部分 | 能从 `ev` 行的 `chNNNN` 推断的可以回填；推不出的必然要回构建期记录或原文 |
+| 证据行没有引文（只有 `micro:` 指针） | 不能 | 引文文本不在包里，只能回原文按章节区间补抽 |
+| 校准条目落在 `calibrated_supplements` | 能，但要重排序号 | 并入 `calibrated_cards` 并重排 catalog/router |
+
+`migrate-kb.js` 默认不改动 `anchors` 的顺序，也不重建索引——它把旧序号映射成新序号，
+所以手工调过的 posting 与别名不会丢。跑完必须重跑 `validate-kb`、`index-hygiene`、
+`query-probe`，其中 probe 的命中集应当与迁移前**逐条一致**（排序不应改变召回）。

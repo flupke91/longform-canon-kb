@@ -26,6 +26,7 @@ const {
   allCards,
   isMobileKb,
   positionalArgs,
+  serializeKb,
   argValue,
   argNumber,
   argFlag,
@@ -118,91 +119,13 @@ function rebuildRouter(cards) {
   return router;
 }
 
-// Serialize with one value per line, chunking long arrays so no physical line
-// exceeds the byte limit. The mobile reader is line-oriented.
-function serializeValue(key, value, suffix) {
-  const out = [];
-  const head = key === null ? null : `${JSON.stringify(key)}: `;
-  if (Array.isArray(value)) {
-    out.push(`${head === null ? '' : head}[`);
-    value.forEach((item, index) => {
-      out.push(`${JSON.stringify(item)}${index === value.length - 1 ? '' : ','}`);
-    });
-    out.push(`]${suffix}`);
-    return out;
-  }
-  if (value && typeof value === 'object') {
-    out.push(`${head === null ? '' : head}{`);
-    const entries = Object.entries(value);
-    entries.forEach(([innerKey, innerValue], index) => {
-      const innerSuffix = index === entries.length - 1 ? '' : ',';
-      out.push(...serializeValue(innerKey, innerValue, innerSuffix));
-    });
-    out.push(`}${suffix}`);
-    return out;
-  }
-  out.push(`${head === null ? '' : head}${JSON.stringify(value)}${suffix}`);
-  return out;
-}
-
-function serializeChunked(key, value, suffix, lineBytes) {
-  // Postings and other flat arrays are chunked so no physical line runs long.
-  const out = [`${JSON.stringify(key)}: [`];
-  const chunks = [];
-  let current = '';
-  for (const item of value) {
-    const piece = JSON.stringify(item);
-    if (current && Buffer.byteLength(`${current},${piece}`, 'utf8') > lineBytes - 8) {
-      chunks.push(current);
-      current = piece;
-    } else {
-      current = current ? `${current},${piece}` : piece;
-    }
-  }
-  if (current) chunks.push(current);
-  chunks.forEach((chunk, index) => {
-    out.push(`${chunk}${index === chunks.length - 1 ? '' : ','}`);
-  });
-  out.push(`]${suffix}`);
-  return out;
-}
-
-function serialize(root, lineBytes) {
-  const lines = ['{'];
-  const entries = Object.entries(root).filter(([, value]) => value !== undefined);
-  entries.forEach(([key, value], index) => {
-    const suffix = index === entries.length - 1 ? '' : ',';
-    if (key === 'mobile_router') {
-      const out = [`${JSON.stringify(key)}: {`];
-      const indexEntries = Object.entries(value);
-      indexEntries.forEach(([indexName, indexValue], indexPosition) => {
-        out.push(`${JSON.stringify(indexName)}: {`);
-        const keys = Object.entries(indexValue);
-        keys.forEach(([postingKey, postings], postingPosition) => {
-          out.push(...serializeChunked(postingKey, postings, postingPosition === keys.length - 1 ? '' : ',', lineBytes));
-        });
-        out.push(`}${indexPosition === indexEntries.length - 1 ? '' : ','}`);
-      });
-      out.push(`}${suffix}`);
-      lines.push(...out);
-      return;
-    }
-    if (Array.isArray(value)) {
-      lines.push(...serializeChunked(key, value, suffix, lineBytes));
-      return;
-    }
-    lines.push(...serializeValue(key, value, suffix));
-  });
-  lines.push('}');
-  return `${lines.join('\n')}\n`;
-}
 function applyLadder(kb, cards, options) {
   let current = cards.map(card => ({ ...card, raw: { ...card.raw } }));
   const protectedIds = protectedSet(cards);
   const changes = [];
   const measure = candidateCards => {
     const payload = toPayload(kb, candidateCards);
-    return Buffer.byteLength(serialize(payload, options.lineBytes), 'utf8');
+    return Buffer.byteLength(serializeKb(payload, options.lineBytes), 'utf8');
   };
 
   let bytes = measure(current);
@@ -325,18 +248,18 @@ function main() {
     lineBytes: argNumber(args, '--line-bytes', 2048)
   };
   const cards = allCards(kb);
-  const originalBytes = Buffer.byteLength(serialize(toPayload(kb, cards), options.lineBytes), 'utf8');
+  const originalBytes = Buffer.byteLength(serializeKb(toPayload(kb, cards), options.lineBytes), 'utf8');
   const result = applyLadder(kb, cards, options);
   const payload = toPayload(kb, result.cards);
   if (payload.manifest?.size_budget) {
     payload.manifest = { ...payload.manifest, size_budget: { ...payload.manifest.size_budget, measured: result.bytes } };
   }
-  let text = serialize(payload, options.lineBytes);
+  let text = serializeKb(payload, options.lineBytes);
   // The measured value is embedded in the file, so iterate to a fixed point.
   for (let attempt = 0; attempt < 6; attempt += 1) {
     const measured = Buffer.byteLength(text, 'utf8');
     if (payload.manifest?.size_budget) payload.manifest.size_budget.measured = measured;
-    const next = serialize(payload, options.lineBytes);
+    const next = serializeKb(payload, options.lineBytes);
     if (next === text) break;
     text = next;
   }

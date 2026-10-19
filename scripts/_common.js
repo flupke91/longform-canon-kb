@@ -122,6 +122,85 @@ function positionalArgs(args) {
   return out;
 }
 
+// Line-bounded JSON serializer for mobile KBs. One value per line, long flat
+// arrays chunked so no physical line exceeds the limit; the mobile reader is
+// line-oriented and a multi-MB single line is invisible to it.
+function serializeValue(key, value, suffix) {
+  const out = [];
+  const head = key === null ? null : `${JSON.stringify(key)}: `;
+  if (Array.isArray(value)) {
+    out.push(`${head === null ? '' : head}[`);
+    value.forEach((item, index) => {
+      out.push(`${JSON.stringify(item)}${index === value.length - 1 ? '' : ','}`);
+    });
+    out.push(`]${suffix}`);
+    return out;
+  }
+  if (value && typeof value === 'object') {
+    out.push(`${head === null ? '' : head}{`);
+    const entries = Object.entries(value);
+    entries.forEach(([innerKey, innerValue], index) => {
+      const innerSuffix = index === entries.length - 1 ? '' : ',';
+      out.push(...serializeValue(innerKey, innerValue, innerSuffix));
+    });
+    out.push(`}${suffix}`);
+    return out;
+  }
+  out.push(`${head === null ? '' : head}${JSON.stringify(value)}${suffix}`);
+  return out;
+}
+
+function serializeChunked(key, value, suffix, lineBytes) {
+  const out = [`${JSON.stringify(key)}: [`];
+  const chunks = [];
+  let current = '';
+  for (const item of value) {
+    const piece = JSON.stringify(item);
+    if (current && Buffer.byteLength(`${current},${piece}`, 'utf8') > lineBytes - 8) {
+      chunks.push(current);
+      current = piece;
+    } else {
+      current = current ? `${current},${piece}` : piece;
+    }
+  }
+  if (current) chunks.push(current);
+  chunks.forEach((chunk, index) => {
+    out.push(`${chunk}${index === chunks.length - 1 ? '' : ','}`);
+  });
+  out.push(`]${suffix}`);
+  return out;
+}
+
+function serializeKb(root, lineBytes) {
+  const lines = ['{'];
+  const entries = Object.entries(root).filter(([, value]) => value !== undefined);
+  entries.forEach(([key, value], index) => {
+    const suffix = index === entries.length - 1 ? '' : ',';
+    if (key === 'mobile_router') {
+      const out = [`${JSON.stringify(key)}: {`];
+      const indexEntries = Object.entries(value);
+      indexEntries.forEach(([indexName, indexValue], indexPosition) => {
+        out.push(`${JSON.stringify(indexName)}: {`);
+        const keys = Object.entries(indexValue);
+        keys.forEach(([postingKey, postings], postingPosition) => {
+          out.push(...serializeChunked(postingKey, postings, postingPosition === keys.length - 1 ? '' : ',', lineBytes));
+        });
+        out.push(`}${indexPosition === indexEntries.length - 1 ? '' : ','}`);
+      });
+      out.push(`}${suffix}`);
+      lines.push(...out);
+      return;
+    }
+    if (Array.isArray(value)) {
+      lines.push(...serializeChunked(key, value, suffix, lineBytes));
+      return;
+    }
+    lines.push(...serializeValue(key, value, suffix));
+  });
+  lines.push('}');
+  return `${lines.join('\n')}\n`;
+}
+
 function argValue(args, flag, fallback) {
   const index = args.indexOf(flag);
   if (index >= 0 && index + 1 < args.length && !args[index + 1].startsWith('--')) return args[index + 1];
@@ -161,6 +240,7 @@ module.exports = {
   allCards,
   routerOf,
   positionalArgs,
+  serializeKb,
   argValue,
   argFlag,
   argNumber,

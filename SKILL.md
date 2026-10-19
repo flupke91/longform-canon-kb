@@ -146,7 +146,7 @@ Chatbox 侧会读什么、不会读什么，见 `references/chatbox-runtime.md`�
 
 ## 脚本
 
-五个 Node 脚本（无依赖，Node 18+）覆盖编译后的全部验证与压缩工作。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
+六个脚本（无依赖，Node 18+）覆盖编译后的验证、压缩与迁移工作。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
 
 ```bash
 # 结构与引用门禁；桌面版与手机版自动识别
@@ -166,6 +166,10 @@ node scripts/validate-chatbox.js kb.json --out chatbox-report.json
 # 字节预算压缩；--dry-run 只测量不写文件，绝不原地覆盖输入
 node scripts/compact-kb.js kb.json --out compacted.json --dry-run
 node scripts/compact-kb.js kb.json --out compacted.json --target-max 19398656
+
+# 已有包的迁移（不动事实、不重抽）：section 内按章节排序并重排 catalog/router 序号，
+# 从时间锚点回填 story_time；默认只读，--out 才写
+node scripts/migrate-kb.js kb.json --out migrated.json --sort-sections --backfill-story-time
 ```
 
 查询集支持两种写法：纯字符串列表，或 `{"query":"主角","expect_any":["m000001"]}` 这种带期望的形式。带期望的用例允许一跳 `refs` 容错。
