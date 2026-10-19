@@ -190,13 +190,15 @@ function main() {
     if (expectAny && expectAny.length && !indexReachable) {
       issues.push({ kind: 'index_unreachable', detail: query });
     }
-    // Anchors appended *after* every substantive hit only fill empty slots and
-    // never push content out, so they do not count as domination. Only anchors
-    // that outrank a substantive card are a retrieval failure.
+    // Domination has two shapes: a pointer card at rank 1, or an anchor that
+    // outranks a content card. Anchors appended *after* every substantive hit
+    // only fill empty slots, so they do not count.
     const anchorPositions = hits.map((hit, position) => (hit.anchor ? position : -1)).filter(position => position >= 0);
     const lastSubstantive = hits.map((hit, position) => (hit.anchor ? -1 : position)).filter(position => position >= 0).pop() ?? -1;
     const leadingAnchors = anchorPositions.filter(position => position < lastSubstantive).length;
-    if (leadingAnchors > options.maxAnchors) issues.push({ kind: 'anchor_dominates_topk', detail: query });
+    if (hits[0]?.anchor || leadingAnchors > options.maxAnchors) {
+      issues.push({ kind: 'anchor_dominates_topk', detail: query });
+    }
     // Refill past maxAnchors is allowed (a tiny KB would otherwise return one
     // hit per chapter query) but it is still a limit violation worth surfacing.
     if (anchorPositions.length > options.maxAnchors) {
