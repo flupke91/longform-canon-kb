@@ -113,6 +113,20 @@ jobs:
           node scripts/bench-kb.js evals/fixtures/mini-valid-kb.json \
             --auto-queries 3 --baseline evals/bench/baseline-mini.json
 
+      - name: Quality benchmark must run end to end
+        if: matrix.node == 22
+        run: |
+          node scripts/bench-quality.js evals/fixtures/mini-valid-kb.json \
+            --samples 2 --no-gate --out "$RUNNER_TEMP/quality.json"
+          node -e "
+            const r = require(process.env.RUNNER_TEMP + '/quality.json');
+            if (!r.metrics || typeof r.metrics.retrieval_hit5 !== 'number') {
+              console.error('bench-quality.js produced no metrics');
+              process.exit(1);
+            }
+            console.log('quality metrics', JSON.stringify(r.metrics));
+          "
+
       - name: Compact must not lose protected records
         run: |
           set -o pipefail
