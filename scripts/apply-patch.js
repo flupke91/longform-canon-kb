@@ -51,17 +51,29 @@ function readJsonl(file) {
 function chapterIndex(kb) {
   const byId = new Map();
   const byNumber = new Map();
+  // Some catalogs carry alias rows such as "CH_861" whose chapter number is null,
+  // sitting next to the canonical "ch0861". Resolving a quote to the alias would
+  // leave the card without a chapter number, i.e. outside the timeline, so alias
+  // ordinals are redirected to the canonical row with the same number.
+  const aliasByOrdinal = new Map();
   for (const row of kb.chapter_catalog || []) {
     if (!Array.isArray(row)) continue;
     const ordinal = Number(row[0]);
     const id = String(row[1] ?? '');
-    const number = typeof row[2] === 'number' && row[2] > 0
-      ? row[2]
+    const declared = row[2];
+    const number = typeof declared === 'number' && declared > 0
+      ? declared
       : Number.parseInt(id.replace(/\D/g, ''), 10);
     if (id) byId.set(id.toLowerCase(), { ordinal, id });
     if (Number.isFinite(number)) byNumber.set(number, { ordinal, id });
+    else if (/^CH_\d+$/iu.test(id)) aliasByOrdinal.set(ordinal, Number.parseInt(id.replace(/\D/g, ''), 10));
   }
-  return { byId, byNumber };
+  const aliasToCanonical = new Map();
+  for (const [ordinal, number] of aliasByOrdinal) {
+    const canonical = byNumber.get(number);
+    if (canonical && canonical.ordinal !== ordinal) aliasToCanonical.set(ordinal, canonical.ordinal);
+  }
+  return { byId, byNumber, aliasToCanonical };
 }
 
 function main() {
@@ -113,7 +125,9 @@ function main() {
         continue;
       }
       const chaptersToSet = Array.isArray(record.ch) ? record.ch : [];
-      const valid = chaptersToSet.filter(value => Number.isInteger(value) && value >= 0 && value < chapterCount);
+      const valid = chaptersToSet
+        .filter(value => Number.isInteger(value) && value >= 0 && value < chapterCount)
+        .map(value => chapters.aliasToCanonical.get(value) ?? value);
       if (chaptersToSet.length === 0 || valid.length !== chaptersToSet.length) {
         report.ch_rejected += 1;
         issues.push({

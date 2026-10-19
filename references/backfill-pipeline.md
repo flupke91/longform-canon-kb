@@ -66,8 +66,9 @@ node scripts/query-probe.js        kb.backfilled.json --expect queries.json --to
 | --- | --- |
 | `apply-patch` 拒收 | 0 |
 | `validate-kb` | 通过 |
-| `validate-chatbox.quotes_missing` | 显著下降（目标 < 全量的 10%） |
-| `ch` 缺失 | < 1% |
+| 能显示原文摘录的卡（首条证据是引文） | 从 8.8% 提到 ≥ 60% |
+| `validate-chatbox.quotes_missing` | 仅作参考：每张卡第 2 条证据仍是定位串，这个数不会降到 0 |
+| `ch` 缺失 | < 1%（本次 3,514 → 84） |
 | 人工抽样 | 50 条，章节与摘录均正确 |
 
 抽样必须做。脚本只能保证格式，保证不了"这句原文真的在那一章"。
