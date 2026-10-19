@@ -120,11 +120,13 @@ jobs:
             --per-bucket 1 --no-gate --out "$RUNNER_TEMP/quality.json"
           node -e "
             const r = require(process.env.RUNNER_TEMP + '/quality.json');
-            if (!r.metrics || typeof r.metrics.retrieval_hit5 !== 'number') {
-              console.error('bench-quality.js produced no metrics');
+            const buckets = r.buckets || {};
+            const scored = Object.values(buckets).filter(b => typeof b.hit5 === 'number');
+            if (!scored.length) {
+              console.error('bench-quality.js produced no per-category metrics');
               process.exit(1);
             }
-            console.log('quality metrics', JSON.stringify(r.metrics));
+            console.log('quality buckets', JSON.stringify(Object.fromEntries(scored.map(b => [b.label, b.hit5]))));
           "
 
       - name: Compact must not lose protected records
