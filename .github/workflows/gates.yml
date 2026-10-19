@@ -105,6 +105,14 @@ jobs:
             exit 1
           fi
 
+      - name: Benchmark must run and stay within the baseline
+        if: matrix.node == 22
+        run: |
+          node scripts/bench-kb.js evals/fixtures/mini-valid-kb.json \
+            --auto-queries 3 --out "$RUNNER_TEMP/bench.json"
+          node scripts/bench-kb.js evals/fixtures/mini-valid-kb.json \
+            --auto-queries 3 --baseline evals/bench/baseline-mini.json
+
       - name: Compact must not lose protected records
         run: |
           set -o pipefail
