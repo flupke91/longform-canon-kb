@@ -49,8 +49,10 @@ jobs:
 
       - name: Fixture must FLAG the anchor limit on an entity query
         run: |
+          # The probe is expected to fail this fixture, so do not let `set -e`
+          # abort before the assertion runs.
           node scripts/query-probe.js evals/fixtures/broken-kb.json \
-            --query 主角 --out "$RUNNER_TEMP/probe.json" > /dev/null
+            --query 主角 --out "$RUNNER_TEMP/probe.json" > /dev/null || true
           node -e "
             const r = require('$RUNNER_TEMP/probe.json');
             if (!(r.checks.anchor_limit_exceeded > 0)) {
