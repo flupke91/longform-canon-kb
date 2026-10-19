@@ -74,6 +74,37 @@ jobs:
           node scripts/validate-kb.js --out "$RUNNER_TEMP/v.json" evals/fixtures/mini-valid-kb.json
           test -s "$RUNNER_TEMP/v.json"
 
+      - name: Migration must keep the gates green
+        run: |
+          node scripts/migrate-kb.js evals/fixtures/mini-valid-kb.json \
+            --out "$RUNNER_TEMP/migrated.json" --sort-sections --backfill-story-time
+          node scripts/validate-kb.js "$RUNNER_TEMP/migrated.json"
+          node scripts/index-hygiene.js "$RUNNER_TEMP/migrated.json"
+          node scripts/query-probe.js "$RUNNER_TEMP/migrated.json" \
+            --expect evals/fixtures/mini-valid-queries.json --top-k 5
+
+      - name: Backfill pipe must accept a well-formed patch
+        run: |
+          node scripts/export-worklist.js evals/fixtures/mini-valid-kb.json \
+            --out-dir "$RUNNER_TEMP/worklist"
+          test -s "$RUNNER_TEMP/worklist/chapter-map.json"
+          printf '%s\n' '{"card_id":"m000001","ch":[1],"method":"ev_row","confidence":"high"}' > "$RUNNER_TEMP/ch.jsonl"
+          printf '%s\n' '{"card_id":"m000001","chapter":"ch0002","quote":"雨还没停，他站在山门前没有动。"}' > "$RUNNER_TEMP/quotes.jsonl"
+          node scripts/apply-patch.js evals/fixtures/mini-valid-kb.json \
+            --ch "$RUNNER_TEMP/ch.jsonl" --quotes "$RUNNER_TEMP/quotes.jsonl" \
+            --out "$RUNNER_TEMP/patched.json"
+          node scripts/validate-kb.js "$RUNNER_TEMP/patched.json"
+          node scripts/validate-chatbox.js "$RUNNER_TEMP/patched.json"
+
+      - name: Backfill must reject an out-of-range chapter ordinal
+        run: |
+          printf '%s\n' '{"card_id":"m000001","ch":[99999],"method":"ev_row","confidence":"high"}' > "$RUNNER_TEMP/bad-ch.jsonl"
+          if node scripts/apply-patch.js evals/fixtures/mini-valid-kb.json \
+            --ch "$RUNNER_TEMP/bad-ch.jsonl" --out "$RUNNER_TEMP/bad.json"; then
+            echo "::error::apply-patch.js accepted an out-of-range chapter ordinal"
+            exit 1
+          fi
+
       - name: Compact must not lose protected records
         run: |
           set -o pipefail
