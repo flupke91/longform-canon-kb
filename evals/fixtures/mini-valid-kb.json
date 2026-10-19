@@ -1,0 +1,223 @@
+{
+ "format": "GUR-MOBILE-CARD-2",
+ "manifest": {
+  "kb_name": "mini-valid-fixture",
+  "kb_version": "1.0.0",
+  "schema_version": 2,
+  "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "prompt_compatibility": "story-game-prompt@1",
+  "permission_status": "UNVERIFIED",
+  "release_status": "test",
+  "compact_policy": "none",
+  "size_budget": {
+   "target_min": 0,
+   "target_max": 200000,
+   "hard_max": 400000
+  }
+ },
+ "encoding": {
+  "ch": "chapter_catalog 数组下标，不是章节号",
+  "card_id": "只能从 mobile_card_catalog[ordinal][1] 取，禁止公式反推",
+  "ev": "evidence_catalog 行下标",
+  "evidence_row": "[chapter_id, type_code, quote, micro_ref, extra_ref]"
+ },
+ "runtime_core": {
+  "world_rules": [
+   { "rule_id": "r001", "category": "世界", "statement": "蛊师以蛊虫为器，修为分九转，转数越高寿元越长。" }
+  ],
+  "spoiler_policy": "只允许使用不超过当前章节的信息。"
+ },
+ "chapter_catalog": [
+  [0, "ch0001", 1],
+  [1, "ch0002", 2],
+  [2, "ch0350", 350]
+ ],
+ "evidence_catalog": [
+  ["ch0001", "Q", "雨还没停，他站在山门前没有动。", "micro:a1", null],
+  ["ch0002", "Q", "白凝冰抬头看他一眼，没有答话。", "micro:a2", null],
+  ["ch0001", "P", null, "micro:a3", "ev:p3"],
+  ["ch0350", "Q", "春秋蝉振翅，光阴倒流。", "micro:a4", null]
+ ],
+ "mobile_card_catalog": [
+  [0, "m000001", "entity", 3, 1],
+  [1, "m000002", "entity", 3, 1],
+  [2, "m000003", "character_state", 2, 1],
+  [3, "m000004", "event", 3, 1],
+  [4, "m000005", "item", 4, 1],
+  [5, "anchor:chapter:0", "anchor", 2, 0],
+  [6, "anchor:chapter:1", "anchor", 2, 0],
+  [7, "anchor:chapter:2", "anchor", 2, 0],
+  [8, "anchor:time:0", "anchor", 2, 0],
+  [9, "anchor:time:1", "anchor", 2, 0]
+ ],
+ "entities": [
+  {
+   "_id": "m000001",
+   "name": "方源",
+   "keys": ["蛊师", "前世记忆"],
+   "aliases": ["古月方源"],
+   "ch": [0, 1],
+   "card": "出身青茅山的少年蛊师，行事极度冷静，先算后动，为达目的可以牺牲任何人。",
+   "ev": [0],
+   "refs": ["m000003", "m000005"],
+   "story_time": "开篇",
+   "risk_categories": ["identity"]
+  },
+  {
+   "_id": "m000002",
+   "name": "白凝冰",
+   "keys": ["冰道"],
+   "aliases": ["白家三小姐"],
+   "ch": [1],
+   "card": "白家三小姐，修习冰道，性情外冷内烈，对族规既服从又不满。",
+   "ev": [1],
+   "story_time": "开篇"
+  }
+ ],
+ "character_states": [
+  {
+   "_id": "m000003",
+   "name": "方源·开篇",
+   "ch": [0],
+   "card": "开篇时仅有二阶修为，靠前世记忆布局，尚未暴露重生身份。",
+   "ev": [0],
+   "refs": ["m000001"],
+   "story_time": "开篇"
+  }
+ ],
+ "claims": [],
+ "rules": [],
+ "events": [
+  {
+   "_id": "m000004",
+   "name": "青茅山夜战",
+   "keys": ["夜战"],
+   "ch": [0, 1],
+   "card": "青茅山遭袭，方源借地势伏杀来敌，第一次在人前暴露底牌。",
+   "ev": [2],
+   "story_time": "开篇"
+  }
+ ],
+ "relationships": [],
+ "items_and_gu": [
+  {
+   "_id": "m000005",
+   "name": "春秋蝉",
+   "keys": ["六转", "本命蛊"],
+   "ch": [2],
+   "card": "六转仙蛊，可回溯光阴，使用者需付出寿元代价，且不可连续使用。",
+   "ev": [3],
+   "story_time": "第一章前三年",
+   "risk_categories": ["core"]
+  }
+ ],
+ "factions": [],
+ "locations": [],
+ "terms": [],
+ "foreshadows": [],
+ "conflicts": [],
+ "timeline": [],
+ "calibrated_cards": [],
+ "anchors": [
+  {
+   "_id": "anchor:chapter:0",
+   "name": "第1章",
+   "card": "章节锚点 第1章。",
+   "keys": ["ch0001"],
+   "ch": [0],
+   "chapter_id": "ch0001",
+   "refs": ["m000001"],
+   "anchor": "chapter"
+  },
+  {
+   "_id": "anchor:chapter:1",
+   "name": "第2章",
+   "card": "章节锚点 第2章。",
+   "keys": ["ch0002"],
+   "ch": [1],
+   "chapter_id": "ch0002",
+   "refs": ["m000002"],
+   "anchor": "chapter"
+  },
+  {
+   "_id": "anchor:chapter:2",
+   "name": "第350章",
+   "card": "章节锚点 第350章。",
+   "keys": ["ch0350"],
+   "ch": [2],
+   "chapter_id": "ch0350",
+   "refs": ["m000005"],
+   "anchor": "chapter"
+  },
+  {
+   "_id": "anchor:time:0",
+   "name": "开篇时间锚点",
+   "card": "时间锚点 开篇。",
+   "keys": ["开篇"],
+   "ch": [0],
+   "refs": ["m000001"],
+   "anchor": "time",
+   "story_time": "开篇"
+  },
+  {
+   "_id": "anchor:time:1",
+   "name": "第一章前三年时间锚点",
+   "card": "时间锚点 第一章前三年。",
+   "keys": ["第一章前三年"],
+   "ch": [2],
+   "refs": ["m000005"],
+   "anchor": "time",
+   "story_time": "第一章前三年"
+  }
+ ],
+ "mobile_router": {
+  "entities": {
+   "方源": [0],
+   "白凝冰": [1],
+   "方源·开篇": [2],
+   "青茅山夜战": [3],
+   "春秋蝉": [4],
+   "第1章": [5],
+   "第2章": [6],
+   "第350章": [7],
+   "开篇时间锚点": [8],
+   "第一章前三年时间锚点": [9]
+  },
+  "aliases": {
+   "古月方源": [0],
+   "白家三小姐": [1]
+  },
+  "keys": {
+   "蛊师": [0],
+   "冰道": [1],
+   "夜战": [3],
+   "六转": [4]
+  },
+  "chapters": {
+   "0": [0, 2, 3, 5, 8],
+   "1": [0, 1, 3, 6],
+   "2": [4, 7, 9]
+  },
+  "times": {
+   "开篇": [0, 1, 2, 3, 8],
+   "第一章前三年": [4, 9]
+  },
+  "risks": {
+   "identity": [0],
+   "core": [4]
+  },
+  "anchors": {
+   "chapter": [5, 6, 7],
+   "time": [8, 9]
+  }
+ },
+ "coverage_and_limits": {
+  "time_anchors": ["开篇", "第一章前三年"],
+  "unknown_policy": "无证据写 UNKNOWN"
+ },
+ "mobile_stats": {
+  "cards_kept": 10,
+  "cards_dropped": 0,
+  "regression_groups": 5
+ }
+}

@@ -63,7 +63,12 @@ function mobileSections(kb) {
 }
 
 function isMobileKb(kb) {
-  return Array.isArray(kb.mobile_card_catalog) || Array.isArray(kb.anchors);
+  // `anchors` alone is not proof: the desktop schema lists it at the root too,
+  // and misdetecting a desktop KB as mobile reports a missing catalog plus a
+  // pile of empty indexes.
+  if (Array.isArray(kb.mobile_card_catalog)) return true;
+  if (Array.isArray(kb.record_catalog)) return false;
+  return Array.isArray(kb.anchors);
 }
 
 function allCards(kb) {
@@ -91,6 +96,30 @@ function allCards(kb) {
 
 function routerOf(kb) {
   return kb.mobile_router || kb.retrieval_index || {};
+}
+
+// Flags that consume the following token as their value. Without this list a
+// naive `args.find(v => !v.startsWith('--'))` treats "--out report.json" as the
+// input path, so `validate-kb.js --out r.json kb.json` read r.json instead.
+const VALUE_FLAGS = new Set([
+  '--out', '--expect', '--query', '--top-k', '--max-anchors',
+  '--max-line-bytes', '--max-card-chars', '--min-bytes', '--max-bytes',
+  '--hard-max-bytes', '--max-key-posting', '--max-noise-samples',
+  '--target-min', '--target-max', '--hard-max', '--line-bytes'
+]);
+
+function positionalArgs(args) {
+  const out = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index];
+    if (value.startsWith('--')) {
+      const name = value.includes('=') ? value.slice(0, value.indexOf('=')) : value;
+      if (!value.includes('=') && VALUE_FLAGS.has(name)) index += 1;
+      continue;
+    }
+    out.push(value);
+  }
+  return out;
 }
 
 function argValue(args, flag, fallback) {
@@ -131,6 +160,7 @@ module.exports = {
   isMobileKb,
   allCards,
   routerOf,
+  positionalArgs,
   argValue,
   argFlag,
   argNumber,

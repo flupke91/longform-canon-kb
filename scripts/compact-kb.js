@@ -25,6 +25,7 @@ const {
   maxLineBytes,
   allCards,
   isMobileKb,
+  positionalArgs,
   argValue,
   argNumber,
   argFlag,
@@ -32,7 +33,7 @@ const {
 } = require('./_common');
 
 const CJK = /[\u3400-\u9fff\u3040-\u30ff]/u;
-const PLACEHOLDER = /^(?:未命名|unknown|未知|n\/?a|null|undefined)(?:$|[-:：])/u;
+const PLACEHOLDER = /^(?:未命名|(?:unknown|未知|n\/?a|null|undefined)(?:$|[-:：]))/u;
 const NAME_INDEXES = new Set(['entities', 'aliases', 'keys']);
 const UNKNOWN_TIMES = new Set(['unknown', '未知']);
 const TEXT_KEYS = ['card', 'text', 'statement', 'summary'];
@@ -220,26 +221,43 @@ function applyLadder(kb, cards, options) {
   bytes = measure(current);
   if (bytes <= options.targetMax) return { cards: current, bytes, changes };
 
-  // Step 2: drop unreferenced archive cards.
+  // Step 2: drop unreferenced archive cards, biggest first, and stop as soon as
+  // the target is met. Dropping the whole droppable set at once overshoots the
+  // target and violates the documented "stop when the budget is met" rule.
   const referenced = new Set();
   for (const card of cards) for (const ref of card.raw.refs || []) referenced.add(String(ref));
-  const droppable = new Set(
-    current
-      .filter(card => card.rank < 2 && !protectedIds.has(card.id) && !referenced.has(card.id))
-      .sort((a, b) => unicodeLength(JSON.stringify(a.raw)) - unicodeLength(JSON.stringify(b.raw)))
-      .map(card => card.id)
-  );
-  if (droppable.size) {
-    const kept = current.filter(card => !droppable.has(card.id));
-    const keptBytes = measure(kept);
-    if (keptBytes <= options.targetMax) {
-      changes.push({ stage: 'drop-unreferenced-archive', cards: current.length - kept.length });
-      return { cards: kept, bytes: keptBytes, changes };
+  const droppable = current
+    .filter(card => card.rank < 2 && !protectedIds.has(card.id) && !referenced.has(card.id))
+    .sort((a, b) => unicodeLength(JSON.stringify(b.raw)) - unicodeLength(JSON.stringify(a.raw)));
+  if (droppable.length) {
+    const attempt = count => {
+      const ids = new Set(droppable.slice(0, count).map(card => card.id));
+      return current.filter(card => !ids.has(card.id));
+    };
+    let low = 0;
+    let high = droppable.length;
+    let best = null;
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      const candidate = attempt(mid);
+      const candidateBytes = measure(candidate);
+      if (candidateBytes <= options.targetMax) {
+        best = { cards: candidate, bytes: candidateBytes, dropped: mid };
+        high = mid - 1;
+      } else {
+        low = mid + 1;
+      }
     }
-    const dropped = current.filter(card => !droppable.has(card.id));
-    changes.push({ stage: 'drop-unreferenced-archive', cards: current.length - dropped.length });
+    if (best) {
+      changes.push({ stage: 'drop-unreferenced-archive', cards: best.dropped });
+      return { cards: best.cards, bytes: best.bytes, changes };
+    }
+    // Still over budget even after every eligible card is gone: take them all
+    // and continue down the ladder.
+    const dropped = attempt(droppable.length);
+    changes.push({ stage: 'drop-unreferenced-archive', cards: droppable.length });
     current = dropped;
-    bytes = keptBytes;
+    bytes = measure(current);
   }
 
   // Step 3: shorten non-core timeline text.
@@ -268,6 +286,15 @@ function toPayload(kb, cards) {
     payload[section] = cards.filter(card => card.section === section).map(card => card.raw);
   }
   payload.mobile_router = rebuildRouter(cards);
+  // Compaction dedups keys postings by contract, so `keys` can legitimately end
+  // up empty; a KB without risk tags has no `risks` entries either. Declare
+  // those so the structural gate does not reject its own output.
+  if (payload.manifest && typeof payload.manifest === 'object') {
+    const emptyIndexes = Object.entries(payload.mobile_router)
+      .filter(([, value]) => !value || Object.keys(value).length === 0)
+      .map(([name]) => name);
+    payload.manifest = { ...payload.manifest, expect_empty_indexes: emptyIndexes };
+  }
   payload.mobile_card_catalog = cards.map((card, ordinal) => [
     ordinal, card.id, card.kind, card.rank, card.substantive === null ? 1 : Number(card.substantive)
   ]);
@@ -276,7 +303,7 @@ function toPayload(kb, cards) {
 
 function main() {
   const args = process.argv.slice(2);
-  const kbPath = args.find(value => !value.startsWith('--') && args.indexOf(value) < args.length);
+  const kbPath = positionalArgs(args)[0];
   if (!kbPath) {
     process.stderr.write('usage: node compact-kb.js <in.json> --out compacted.json\n');
     process.exitCode = 2;

@@ -19,6 +19,7 @@ const {
   normalizeToken,
   allCards,
   isMobileKb,
+  positionalArgs,
   argValue,
   argNumber,
   emit
@@ -28,20 +29,32 @@ function substantive(card) {
   return card.substantive === null ? true : card.substantive;
 }
 
-// Chapter queries accept a chapter_id ("ch0001") or a "chapter-time:" prefix.
-// Resolution goes through chapter_catalog: the dictionary ordinal is what the
-// chapters index is keyed by, and it is NOT the chapter number.
+// Chapter queries accept a chapter_id ("ch0001"), a bare/`第N章` chapter NUMBER,
+// or a "chapter-time:" prefix. Resolution goes through chapter_catalog: the
+// dictionary ordinal is what the chapters index is keyed by, and it is NOT the
+// chapter number. Numeric queries are resolved through the third column
+// (chapter_ordinal) instead of being used as an ordinal directly — that
+// off-by-a-space read is the single most expensive failure in the field notes.
 function chapterOrdinalFromQuery(kb, key) {
   const raw = String(key ?? '').trim().replace(/^chapter-time:/u, '');
   const normalized = normalizeToken(raw);
-  for (const [ordinal, entry] of (kb.chapter_catalog || []).entries()) {
+  const catalog = kb.chapter_catalog || [];
+  if (catalog.length === 0) {
+    const match = normalized.match(/^ch0*(\d+)$/u);
+    return match ? String(Math.max(0, Number(match[1]) - 1)) : null;
+  }
+  for (const [ordinal, entry] of catalog.entries()) {
     const chapterId = Array.isArray(entry) ? entry[1] : entry;
     if (normalizeToken(chapterId) === normalized) return String(entry?.[0] ?? ordinal);
   }
-  if (/^\d+$/u.test(normalized)) return String(Math.max(0, Number(normalized)));
-  const match = normalized.match(/^ch0*(\d+)$/u);
-  if (!match) return null;
-  return (kb.chapter_catalog || []).length ? null : String(Math.max(0, Number(match[1]) - 1));
+  const numeric = normalized.match(/^(?:ch0*|第\s*)?(\d{1,5})(?:\s*章)?$/u);
+  if (!numeric) return null;
+  const wanted = Number(numeric[1]);
+  for (const entry of catalog) {
+    if (!Array.isArray(entry)) continue;
+    if (Number(entry[2]) === wanted) return String(entry[0]);
+  }
+  return null;
 }
 
 function scoreQuery(kb, cards, router, query, options) {
@@ -121,7 +134,7 @@ function scoreQuery(kb, cards, router, query, options) {
 
 function main() {
   const args = process.argv.slice(2);
-  const kbPath = args.find(value => !value.startsWith('--'));
+  const kbPath = positionalArgs(args)[0];
   if (!kbPath) {
     process.stderr.write('usage: node query-probe.js <kb.json> [--expect query-set.json]\n');
     process.exitCode = 2;
@@ -161,6 +174,7 @@ function main() {
 
   const results = [];
   const issues = [];
+  const warnings = [];
   for (const { query, expectAny } of queries) {
     const hits = scoreQuery(kb, cards, router, query, options);
     const key = normalizeToken(query);
@@ -170,8 +184,24 @@ function main() {
         || (chapterOrdinal !== null ? router.chapters?.[chapterOrdinal] : null) || []).length
     );
     if (hits.length === 0) issues.push({ kind: 'empty_result', detail: query });
-    const topAnchorHeavy = hits.length >= 2 && hits.slice(0, options.topK).filter(hit => hit.anchor).length > options.maxAnchors;
-    if (topAnchorHeavy) issues.push({ kind: 'anchor_dominates_topk', detail: query });
+    // A graded case whose key is absent from every exact index can still be
+    // rescued by prefix expansion, but that is chance, not a contract. Report
+    // it so a regression is not silently masked by a lucky prefix match.
+    if (expectAny && expectAny.length && !indexReachable) {
+      issues.push({ kind: 'index_unreachable', detail: query });
+    }
+    // Anchors appended *after* every substantive hit only fill empty slots and
+    // never push content out, so they do not count as domination. Only anchors
+    // that outrank a substantive card are a retrieval failure.
+    const anchorPositions = hits.map((hit, position) => (hit.anchor ? position : -1)).filter(position => position >= 0);
+    const lastSubstantive = hits.map((hit, position) => (hit.anchor ? -1 : position)).filter(position => position >= 0).pop() ?? -1;
+    const leadingAnchors = anchorPositions.filter(position => position < lastSubstantive).length;
+    if (leadingAnchors > options.maxAnchors) issues.push({ kind: 'anchor_dominates_topk', detail: query });
+    // Refill past maxAnchors is allowed (a tiny KB would otherwise return one
+    // hit per chapter query) but it is still a limit violation worth surfacing.
+    if (anchorPositions.length > options.maxAnchors) {
+      warnings.push({ kind: 'anchors_in_topk_over_limit', detail: `${query}:${anchorPositions.length}` });
+    }
     let expected = null;
     if (expectAny && expectAny.length) {
       const hitIds = new Set(hits.map(hit => hit.id));
@@ -205,9 +235,12 @@ function main() {
     checks: {
       empty_results: issues.filter(issue => issue.kind === 'empty_result').length,
       anchor_dominant: issues.filter(issue => issue.kind === 'anchor_dominates_topk').length,
+      anchor_limit_exceeded: warnings.filter(warning => warning.kind === 'anchors_in_topk_over_limit').length,
+      unreachable_indexes: issues.filter(issue => issue.kind === 'index_unreachable').length,
       expectation_misses: issues.filter(issue => issue.kind === 'expectation_missed').length
     },
     issues,
+    warnings,
     results
   };
   emit(report, { out: argValue(args, '--out', undefined) });

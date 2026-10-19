@@ -13,13 +13,18 @@ const {
   normalizeToken,
   allCards,
   isMobileKb,
+  positionalArgs,
   argValue,
   argNumber,
+  argFlag,
   emit
 } = require('./_common');
 
 const CJK = /[\u3400-\u9fff\u3040-\u30ff]/u;
-const PLACEHOLDER = /^(?:未命名|unknown|未知|n\/?a|null|none|undefined)(?:$|[-:：])/u;
+// "未命名角色1" is just as much a placeholder as "未命名", so the CJK branch
+// needs no boundary; latin placeholders still need one to avoid matching terms
+// like "nullable".
+const PLACEHOLDER = /^(?:未命名|(?:unknown|未知|n\/?a|null|none|undefined)(?:$|[-:：]))/u;
 const STRUCTURAL_TOKENS = new Set([
   'record_type', 'namespace', 'section', 'category', 'entity_type',
   'relation_type', 'event_type', 'kind', 'type'
@@ -82,6 +87,13 @@ function auditMobileRouter(kb, cards, options) {
         if (noise[reason] <= options.maxNoiseSamples) {
           (noise[`${reason}_samples`] ||= []).push(`${indexName}:${key}`);
         }
+        // Placeholder / structural / object-stringified keys are release
+        // blockers: they are guaranteed to be returned by LLM-shaped queries.
+        // Pure non-CJK names are only a warning because a mixed-language
+        // setting legitimately has Latin entity names.
+        if (reason !== 'non-cjk-name' && !options.noiseIsWarning) {
+          issues.push({ kind: 'noise_key', detail: `${indexName}:${key}:${reason}` });
+        }
       }
       for (const ordinal of values) {
         if (!Number.isInteger(ordinal) || ordinal < 0 || ordinal >= cardCount) {
@@ -116,12 +128,16 @@ function auditMobileRouter(kb, cards, options) {
       duplicatePostings += 1;
       if (duplicateSamples.length < options.maxNoiseSamples) duplicateSamples.push(`aliases:${key}`);
     }
+    if (router.keys?.[key] && JSON.stringify(router.keys[key]) === JSON.stringify(values)) {
+      duplicatePostings += 1;
+      if (duplicateSamples.length < options.maxNoiseSamples) duplicateSamples.push(`aliases+keys:${key}`);
+    }
   }
   if (duplicatePostings > 0) {
     issues.push({ kind: 'duplicate_name_postings', detail: String(duplicatePostings) });
   }
   for (const [reason, count] of Object.entries(noise)) {
-    if (!reason.endsWith('_samples') && count > 0) {
+    if (!reason.endsWith('_samples') && count > 0 && (reason === 'non-cjk-name' || options.noiseIsWarning)) {
       warnings.push({ kind: 'noise_key', detail: `${reason}:${count}` });
     }
   }
@@ -226,7 +242,7 @@ function auditDesktopIndex(kb, options) {
 
 function main() {
   const args = process.argv.slice(2);
-  const kbPath = args.find(value => !value.startsWith('--'));
+  const kbPath = positionalArgs(args)[0];
   if (!kbPath) {
     process.stderr.write('usage: node index-hygiene.js <kb.json> [--out report.json]\n');
     process.exitCode = 2;
@@ -234,7 +250,8 @@ function main() {
   }
   const options = {
     maxKeyPosting: argNumber(args, '--max-key-posting', 512),
-    maxNoiseSamples: argNumber(args, '--max-noise-samples', 20)
+    maxNoiseSamples: argNumber(args, '--max-noise-samples', 20),
+    noiseIsWarning: argFlag(args, '--noise-as-warning')
   };
   const { kb, serializedText } = loadKb(kbPath);
   const mobile = isMobileKb(kb);

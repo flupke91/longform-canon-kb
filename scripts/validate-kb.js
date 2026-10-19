@@ -10,22 +10,19 @@
 const path = require('node:path');
 const {
   loadKb,
-  normalizeToken,
   unicodeLength,
   maxLineBytes,
   allCards,
   isMobileKb,
+  positionalArgs,
   argValue,
   argNumber,
   argFlag,
   emit
 } = require('./_common');
 
-const TEXT_KEYS = ['text', 'statement', 'card', 'summary', 'canonical_name', 'name', 'topic'];
-const STRUCTURAL_KEYS = new Set(['record_type', 'namespace', 'section', 'category', 'entity_type', 'relation_type', 'event_type']);
-
-function textOf(card) {
-  for (const key of TEXT_KEYS) {
+function cardText(card) {
+  for (const key of ['card', 'text', 'statement', 'summary']) {
     const value = card.raw[key];
     if (typeof value === 'string' && value.trim()) return value;
   }
@@ -173,20 +170,31 @@ function validateMobile(kb, cards, issues) {
 
 function main() {
   const args = process.argv.slice(2);
-  const kbPath = args.find(value => !value.startsWith('--'));
+  const kbPath = positionalArgs(args)[0];
   if (!kbPath) {
     process.stderr.write('usage: node validate-kb.js <kb.json> [--out report.json]\n');
     process.exitCode = 2;
     return;
   }
-  const maxLineBytesLimit = argNumber(args, '--max-line-bytes', 2048);
-  const maxCardChars = argNumber(args, '--max-card-chars', 420);
+  // Limits live in manifest.size_budget when declared, so a project can tighten
+  // them without editing the script. 0 disables a gate (e.g. minified mobile
+  // builds are one physical line by construction).
+  const { kb, serializedText } = loadKb(kbPath);
+  const budget = kb.manifest?.size_budget || {};
+  const maxLineBytesLimit = argNumber(args, '--max-line-bytes', budget.max_line_bytes ?? 2048);
+  const maxCardChars = argNumber(args, '--max-card-chars', budget.max_card_chars ?? 420);
   const minBytes = argNumber(args, '--min-bytes', undefined);
   const maxBytes = argNumber(args, '--max-bytes', undefined);
   const hardMaxBytes = argNumber(args, '--hard-max-bytes', undefined);
   const allowEmptyIndexes = argFlag(args, '--allow-empty-indexes');
+  // Compaction dedups keys postings by contract, and a KB without risk
+  // categories legitimately has no `risks` entries. Declaring those in the
+  // manifest keeps the empty-index gate meaningful without false failures.
+  const expectedEmptyIndexes = new Set([
+    ...(Array.isArray(kb.manifest?.expect_empty_indexes) ? kb.manifest.expect_empty_indexes : []),
+    ...(allowEmptyIndexes ? ['entities', 'aliases', 'keys', 'chapters', 'times', 'risks', 'anchors'] : [])
+  ]);
 
-  const { kb, serializedText } = loadKb(kbPath);
   const cards = allCards(kb);
   const mobile = isMobileKb(kb);
   const issues = [];
@@ -201,12 +209,26 @@ function main() {
     desktopSummary = validateDesktop(kb, cards, issues);
   }
 
+  // Card-length gate. The documented limit is 420 chars because platform
+  // chunkers split a longer card and the tail loses its section path; the
+  // number was parsed before but never applied, so this gate was a no-op.
+  if (maxCardChars > 0) {
+    let over = 0;
+    for (const card of cards) {
+      const length = unicodeLength(cardText(card));
+      if (length > maxCardChars) {
+        over += 1;
+        if (over <= 20) issues.push({ kind: 'card_over_limit', detail: `${card.id}:${length}` });
+      }
+    }
+    if (over > 20) issues.push({ kind: 'card_over_limit_count', detail: String(over) });
+  }
+
   // Minified desktop sources are a single physical line by construction; the
-  // line gate only makes sense for line-bounded mobile builds.
-  if (mobile && longest.max > maxLineBytesLimit) {
+  // line gate only makes sense for line-bounded builds.
+  if (mobile && maxLineBytesLimit > 0 && longest.max > maxLineBytesLimit) {
     issues.push({ kind: 'line_over_limit', detail: `${longest.line}:${longest.max}` });
   }
-  const budget = kb.manifest?.size_budget || {};
   const lower = minBytes ?? budget.target_min ?? budget.targetMinBytes;
   const upper = maxBytes ?? budget.target_max ?? budget.targetMaxBytes;
   const hard = hardMaxBytes ?? budget.hard_max ?? budget.hardMaxBytes;
@@ -219,7 +241,12 @@ function main() {
     issues.push({ kind: 'size_assertion_mismatch', detail: `${budget.measured}:${bytes}` });
   }
 
-  const filteredIssues = allowEmptyIndexes ? issues.filter(issue => issue.kind !== 'empty_index') : issues;
+  for (const issue of issues) {
+    if (issue.kind === 'empty_index' && expectedEmptyIndexes.has(issue.detail)) {
+      issue.expected = true;
+    }
+  }
+  const filteredIssues = issues.filter(issue => !issue.expected);
   const counted = key => filteredIssues.filter(issue => issue.kind === key).length;
   const coveredEvidences = new Set();
   for (const card of cards) for (const ev of card.raw.ev || []) coveredEvidences.add(ev);
@@ -235,6 +262,7 @@ function main() {
       reused_record_ids: desktopSummary ? desktopSummary.reusedIds : null,
       high_priority_records: desktopSummary ? desktopSummary.highPriority.length : null,
       empty_indexes: counted('empty_index'),
+      over_long_cards: counted('card_over_limit') + counted('card_over_limit_count'),
       dangling_refs: filteredIssues.filter(issue => issue.kind.includes('dangling')).length,
       missing_anchors: filteredIssues.filter(issue => issue.kind.startsWith('missing_')).length,
       missing_evidence_coverage: mobile

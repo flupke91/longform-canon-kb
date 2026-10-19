@@ -1,0 +1,10 @@
+[
+  "方源",
+  { "query": "白凝冰", "expect_any": ["m000002"] },
+  { "query": "春秋蝉", "expect_any": ["m000005"] },
+  { "query": "蛊师", "expect_any": ["m000001"] },
+  { "query": "ch0350", "expect_any": ["m000005"] },
+  { "query": "第350章", "expect_any": ["m000005"] },
+  { "query": "350", "expect_any": ["m000005"] },
+  { "query": "开篇", "expect_any": ["m000001"] }
+]
