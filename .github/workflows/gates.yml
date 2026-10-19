@@ -25,12 +25,17 @@ jobs:
             node --check "$f"
           done
 
-      - name: Fixture must FAIL validate (proves the gate is not a no-op)
+      # A gate that always fails is as useless as one that always passes, so the
+      # deliberately broken fixture must FAIL and the reference fixture MUST PASS.
+      - name: Fixture must FAIL validate
         run: |
           if node scripts/validate-kb.js evals/fixtures/broken-kb.json; then
             echo "::error::validate-kb.js passed a deliberately broken KB"
             exit 1
           fi
+
+      - name: Reference fixture must PASS validate
+        run: node scripts/validate-kb.js evals/fixtures/mini-valid-kb.json
 
       - name: Fixture must FAIL index hygiene
         run: |
@@ -39,18 +44,49 @@ jobs:
             exit 1
           fi
 
-      - name: Fixture must FLAG anchor domination on an entity query
+      - name: Reference fixture must PASS index hygiene
+        run: node scripts/index-hygiene.js evals/fixtures/mini-valid-kb.json
+
+      - name: Fixture must FLAG the anchor limit on an entity query
         run: |
-          if node scripts/query-probe.js evals/fixtures/broken-kb.json --query 主角; then
-            echo "::error::query-probe.js did not flag anchor_dominates_topk"
-            exit 1
-          fi
+          node scripts/query-probe.js evals/fixtures/broken-kb.json \
+            --query 主角 --out "$RUNNER_TEMP/probe.json" > /dev/null
+          node -e "
+            const r = require('$RUNNER_TEMP/probe.json');
+            if (!(r.checks.anchor_limit_exceeded > 0)) {
+              console.error('query-probe.js did not report anchors above maxAnchors');
+              process.exit(1);
+            }
+          "
+
+      - name: Query regression must PASS on the reference fixture
+        run: |
+          node scripts/query-probe.js evals/fixtures/mini-valid-kb.json \
+            --expect evals/fixtures/mini-valid-queries.json --top-k 5
+
+      - name: Chatbox runtime gate must PASS on the reference fixture
+        run: node scripts/validate-chatbox.js evals/fixtures/mini-valid-kb.json
+
+      - name: CLI must accept flags before the positional argument
+        run: |
+          node scripts/validate-kb.js --out "$RUNNER_TEMP/v.json" evals/fixtures/mini-valid-kb.json
+          test -s "$RUNNER_TEMP/v.json"
 
       - name: Compact must not lose protected records
         run: |
+          set -o pipefail
           node scripts/compact-kb.js evals/fixtures/broken-kb.json \
-            --out "$RUNNER_TEMP/compacted.json" | tee "$RUNNER_TEMP/compact.json"
+            --out "$RUNNER_TEMP/compacted.json" > "$RUNNER_TEMP/compact.json"
           node -e "
             const r = require('$RUNNER_TEMP/compact.json');
             if (r.protected_lost !== 0) { console.error('protected_lost =', r.protected_lost); process.exit(1); }
           "
+
+      - name: Compacted reference fixture must still pass every gate
+        run: |
+          set -o pipefail
+          node scripts/compact-kb.js evals/fixtures/mini-valid-kb.json --out "$RUNNER_TEMP/mini-compacted.json"
+          node scripts/validate-kb.js "$RUNNER_TEMP/mini-compacted.json"
+          node scripts/index-hygiene.js "$RUNNER_TEMP/mini-compacted.json"
+          node scripts/query-probe.js "$RUNNER_TEMP/mini-compacted.json" \
+            --expect evals/fixtures/mini-valid-queries.json --top-k 5
