@@ -114,6 +114,8 @@ description: Turn a very long source text (millions of characters, e.g. a multi-
 
 手机和聊天应用通常有硬限制（单附件上限、解析后文本上限、分块大小），并且分块方式会决定卡片能不能被完整召回。要点：
 
+- **先确定平台档位再定预算。** Chatbox 移动/Web 走本地结构化索引，解析后上限 64 MiB；
+  桌面端不适用该特例，上限 6 MiB。同一份 19 MB 的包在手机上富余、在桌面上不建索引。
 - 目标区间和硬上限写进 `manifest`，以磁盘上未压缩 UTF-8 字节数为准。
 - 所有物理行控制在约 2048 字节内；目录、证据和章节表一行一条。
 - 给卡片加"实体性"标记：占位、截断或只有名字的弱卡**降权而不是删除**，让它们仍可作为线索。
@@ -122,6 +124,7 @@ description: Turn a very long source text (millions of characters, e.g. a multi-
 - 压缩完必须重跑阶段 5 的回归，确认没有把可命中的查询裁没了。
 
 完整的目标区间、行策略、平台事实和字段定义见 `references/mobile-compaction.md`。
+Chatbox 侧会读什么、不会读什么，见 `references/chatbox-runtime.md`。
 
 ## 阶段 7 门禁与发布
 
@@ -143,7 +146,7 @@ description: Turn a very long source text (millions of characters, e.g. a multi-
 
 ## 脚本
 
-四个 Node 脚本（无依赖，Node 18+）覆盖编译后的全部验证与压缩工作。都接受 `<kb.json>` 作为第一个位置参数，输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
+五个 Node 脚本（无依赖，Node 18+）覆盖编译后的全部验证与压缩工作。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
 
 ```bash
 # 结构与引用门禁；桌面版与手机版自动识别
@@ -156,6 +159,10 @@ node scripts/index-hygiene.js kb.json
 node scripts/query-probe.js kb.json --expect query-set.json --top-k 5
 node scripts/query-probe.js kb.json --query 主角 --query ch0001
 
+# Chatbox 运行时门禁：是否会被识别为 story KB、卡片是否落在不被读取的 section、
+# 证据行布局、章节号是否超出上限、哪些字节是 Chatbox 根本不读的
+node scripts/validate-chatbox.js kb.json --out chatbox-report.json
+
 # 字节预算压缩；--dry-run 只测量不写文件，绝不原地覆盖输入
 node scripts/compact-kb.js kb.json --out compacted.json --dry-run
 node scripts/compact-kb.js kb.json --out compacted.json --target-max 19398656
@@ -163,12 +170,13 @@ node scripts/compact-kb.js kb.json --out compacted.json --target-max 19398656
 
 查询集支持两种写法：纯字符串列表，或 `{"query":"主角","expect_any":["m000001"]}` 这种带期望的形式。带期望的用例允许一跳 `refs` 容错。
 
-可直接照抄 `evals/query-set.example.json` 起步；`evals/fixtures/broken-kb.json`（含悬空引用、悬空 posting、锚点挤占、噪音键与编号空间陷阱）用来验证脚本本身会真的报错，而不是恒返回通过。
+可直接照抄 `evals/query-set.example.json` 起步；`evals/fixtures/broken-kb.json`（含悬空引用、悬空 posting、锚点挤占、噪音键与编号空间陷阱）用来验证脚本本身会真的报错，`evals/fixtures/mini-valid-kb.json` + `mini-valid-queries.json` 用来验证脚本不会恒返回失败。
 
-**发布前四件都要跑：** validate 通过、hygiene 无 issue、probe 无空结果、compact 报告的 `protected_lost` 为 0。压缩完再跑一遍 validate 和 probe，确认压缩没有把 JSON 序列化写坏，也没有把查询裁没。
+**发布前五件都要跑：** validate 通过、hygiene 无 issue、probe 无空结果、chatbox 无 issue、compact 报告的 `protected_lost` 为 0。压缩完再跑一遍 validate 和 probe，确认压缩没有把 JSON 序列化写坏，也没有把查询裁没。
 ## 参考文件
 
 - `references/extraction-agents.md` — A0–A9 子 Agent 的职责、system prompt 模板、输入契约和输出 schema。要新增抽取领域时先读它。
 - `references/kb-contract.md` — 单文件 KB 的根结构、卡片字段、索引契约、命名空间与优先级语义。编译 KB 前必读。
 - `references/retrieval-optimization.md` — 检索失败分类表、修复决策表、证据类型收敛和回归方法。修检索问题时必读。
 - `references/mobile-compaction.md` — 平台限制、体积阶梯、行策略、证据/章节目录和弱卡标记。做受限版本时必读。
+- `references/chatbox-runtime.md` — Chatbox 实际读取的 section 白名单、卡片决策、证据行布局、章节号上限与各平台体积门槛。要把 KB 放进 Chatbox 时必读。

@@ -23,6 +23,10 @@ mobile_stats           构建统计（保留数、删除数、字节数、回归
 
 `manifest` 至少写：`kb_name`、`kb_version`、`source_sha256`、`schema_version`、`prompt_compatibility`、`permission_status`、`release_status`、`compact_policy`、`size_budget`。
 
+可选但建议写：`expect_empty_indexes`（例如压缩按契约去重后 `keys` 会空、没有风险标签时
+`risks` 会空）、`size_budget.max_line_bytes` / `size_budget.max_card_chars`（覆盖脚本默认值，
+写 0 关闭对应门禁）。
+
 **禁止伪造 `permission_status`。** 权限未核实就写 `UNVERIFIED`，不要为了让流程跑通改成 `APPROVED`。发布门禁要拦 `REVIEW_REQUIRED`。
 
 ## 四层命名空间与优先级
@@ -88,7 +92,7 @@ risk_categories  高风险管理标签
 
 体积门禁（写进 `manifest`）：
 
-- 单行 JSON ≤ 420 字符（超限会被分块读取工具截断）。
+- 单卡正文 ≤ 420 字符；`scripts/validate-kb.js` 会实际拦截（之前这个参数只解析不生效）。
 - 物理行字节数 ≤ 2048（UTF-8），目录、证据、章节表一行一条。
 - 正文优先：`anchor` 卡的 `card` 会被压到 ~20 字，所以锚点卡**不得独占** top-k。
 
@@ -99,8 +103,12 @@ risk_categories  高风险管理标签
 手机版用定长行表压缩：
 
 ```text
-[chapter_id, type_code, quote_ref, micro_ref, extra_ref]
+[chapter_id, type_code, quote, micro_ref, extra_ref]
 ```
+
+`quote` 在 index 2，是唯一会被引用进正文的字段；`P` / `X` 这类没有直接摘录的行留
+`null`。读取方（含 Chatbox）允许回退到 index 4 / 3 以兼容旧包，但会把指针形状的值
+过滤掉，所以不要把定位符写进引文位。
 
 `type_code` 收敛为五类，禁止让模型自由造词：
 

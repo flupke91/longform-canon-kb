@@ -53,10 +53,11 @@ flowchart TB
     PROMPT["prompt.md"]
   end
 
-  subgraph L6["L6 质量门禁（四个脚本）"]
-    V1["validate-kb.js<br/>结构 / 引用 / 行长 / 体积"]
+  subgraph L6["L6 质量门禁（五个脚本）"]
+    V1["validate-kb.js<br/>结构 / 引用 / 行长 / 卡长 / 体积"]
     V2["index-hygiene.js<br/>噪音键 / 重复 posting / 覆盖空洞"]
     V3["query-probe.js<br/>固定查询回归 / 锚点挤占"]
+    V5["validate-chatbox.js<br/>section 白名单 / 证据布局 / 章节号上限"]
     V4["compact-kb.js<br/>预算阶梯 / protected_lost = 0"]
   end
 
@@ -66,8 +67,9 @@ flowchart TB
   W & P & C & T --> VER --> CONFL --> COMPILE --> KB
   COMPILE --> PROMPT
   KB --> V1 & V2 & V3
+  KB --> V5
   KB --> V4 -->|压缩后重跑| V1
-  V1 & V2 & V3 --> GATE{"全部通过？"}
+  V1 & V2 & V3 & V5 --> GATE{"全部通过？"}
   GATE -->|是| RELEASE["发布：目录只放两份资产"]
   GATE -->|否| COMPILE
 ```

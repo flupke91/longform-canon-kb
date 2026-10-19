@@ -43,7 +43,7 @@ git clone https://github.com/<你>/longform-canon-kb ~/.agents/skills/longform-c
 
 ### 2. 只用门禁脚本
 
-四个脚本零依赖，Node 18+ 即可运行：
+五个脚本零依赖，Node 18+ 即可运行：
 
 ```bash
 # 结构与引用门禁（自动识别桌面版 / 卡片路由版）
@@ -55,23 +55,27 @@ node scripts/index-hygiene.js kb.json
 # 固定查询回归：空结果与锚点挤占检测
 node scripts/query-probe.js kb.json --expect query-set.json --top-k 5
 
+# Chatbox 运行时门禁：哪些卡片 / 字节在 Chatbox 里根本读不到
+node scripts/validate-chatbox.js kb.json --out chatbox-report.json
+
 # 字节预算压缩；--dry-run 只测量不写文件
 node scripts/compact-kb.js kb.json --out compacted.json --target-max 19398656
 ```
 
-脚本接受 `<kb.json>` 作为第一个位置参数，输出 JSON 到 stdout，**非零退出码表示门禁失败**，可直接接进 CI。
+脚本接受 `<kb.json>` 作为第一个位置参数（flag 可以写在路径前面），输出 JSON 到 stdout，**非零退出码表示门禁失败**，可直接接进 CI。
 
 ### 3. 自检脚本本身
 
-仓库自带一份**故意有缺陷**的夹具，用来确认脚本会真的报错，而不是恒返回通过：
+仓库自带一份**故意有缺陷**的夹具，用来确认脚本会真的报错；另有一份最小合规夹具，用来确认脚本不会恒返回失败：
 
 ```bash
-node scripts/validate-kb.js     evals/fixtures/broken-kb.json   # → ok:false, 2 处悬空
+node scripts/validate-kb.js     evals/fixtures/broken-kb.json   # → ok:false, 悬空引用
 node scripts/index-hygiene.js   evals/fixtures/broken-kb.json   # → ok:false, 噪音键 + 重复 posting
-node scripts/query-probe.js     evals/fixtures/broken-kb.json --query 主角  # → 锚点挤占
+node scripts/query-probe.js     evals/fixtures/broken-kb.json --query 主角  # → 锚点超出上限
+node scripts/validate-chatbox.js evals/fixtures/mini-valid-kb.json          # → ok:true
 ```
 
-夹具里刻意埋了：悬空卡片引用、悬空 posting、重复实体锚点、重复名字 posting、结构词 / 占位名 / `[object Object]` 噪音键，以及章节字典下标的编号空间陷阱。
+缺陷夹具里刻意埋了：悬空卡片引用、悬空 posting、重复实体锚点、重复名字 posting、结构词 / 占位名 / `[object Object]` 噪音键，以及章节字典下标的编号空间陷阱。
 
 ## 交付物契约
 
@@ -82,6 +86,19 @@ node scripts/query-probe.js     evals/fixtures/broken-kb.json --query 主角  # 
 ### prompt.md
 
 运行时主控 Prompt，负责开局、检索协议、状态推进与叙事规则。构建期的一切都不写进去。
+
+## 放进 Chatbox 之前
+
+Chatbox 不读 `mobile_router`，而是按固定白名单遍历 14 个 section 自己重建索引。因此
+"通过全部结构门禁"和"在 Chatbox 里能检索到"是两件事：
+
+- `anchors` 不作为卡片索引，只用于兜底章节号；`calibrated_supplements` 整段不可见。
+- 证据行的引文必须落在 index 2（`[chapter_id, type_code, quote, micro_ref, extra_ref]`）。
+- 章节号必须 ≤ 2500，否则带剧透上限的查询会把那些卡整体过滤掉。
+- 移动/Web 端的解析上限是 64 MiB，桌面端是 6 MiB 且不适用 story KB 特例。
+
+细节与逐条源码依据见 [references/chatbox-runtime.md](references/chatbox-runtime.md)，
+自动检查用 `node scripts/validate-chatbox.js kb.json`。
 
 ## 七阶段流程
 
