@@ -146,7 +146,7 @@ Chatbox 侧会读什么、不会读什么，见 `references/chatbox-runtime.md`�
 
 ## 脚本
 
-六个脚本（无依赖，Node 18+）覆盖编译后的验证、压缩与迁移工作。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
+八个脚本（无依赖，Node 18+）覆盖编译后的验证、压缩、迁移与原文补全工作。都接受 `<kb.json>` 作为第一个位置参数（允许把带值的 flag 写在路径前面），输出 JSON 到 stdout，非零退出码表示门禁失败，可直接接进 CI。
 
 ```bash
 # 结构与引用门禁；桌面版与手机版自动识别
@@ -170,6 +170,10 @@ node scripts/compact-kb.js kb.json --out compacted.json --target-max 19398656
 # 已有包的迁移（不动事实、不重抽）：section 内按章节排序并重排 catalog/router 序号，
 # 从时间锚点回填 story_time；默认只读，--out 才写
 node scripts/migrate-kb.js kb.json --out migrated.json --sort-sections --backfill-story-time
+
+# 原文补全：导出待补清单 -> 外部按清单读原文产出 jsonl -> 脚本合并
+node scripts/export-worklist.js kb.json --out-dir worklist/
+node scripts/apply-patch.js kb.json --ch ch.jsonl --quotes quotes.jsonl --out out.json
 ```
 
 查询集支持两种写法：纯字符串列表，或 `{"query":"主角","expect_any":["m000001"]}` 这种带期望的形式。带期望的用例允许一跳 `refs` 容错。
@@ -184,3 +188,4 @@ node scripts/migrate-kb.js kb.json --out migrated.json --sort-sections --backfil
 - `references/retrieval-optimization.md` — 检索失败分类表、修复决策表、证据类型收敛和回归方法。修检索问题时必读。
 - `references/mobile-compaction.md` — 平台限制、体积阶梯、行策略、证据/章节目录和弱卡标记。做受限版本时必读。
 - `references/chatbox-runtime.md` — Chatbox 实际读取的 section 白名单、卡片决策、证据行布局、章节号上限与各平台体积门槛。要把 KB 放进 Chatbox 时必读。
+- `references/backfill-pipeline.md` — 已有包缺章节号 / 缺原文摘录时，如何把"读原文"和"改库"拆开，以及合并与验收口径。
