@@ -79,3 +79,56 @@ node scripts/bench-kb.js new-kb.json \
 | **`bench-kb`** | **导入多贵、检索多快、召回多少，并且能和上一版对比** |
 
 前三个是正确性门禁，这一个是性能门禁。正确性不过，性能没有意义。
+
+---
+
+# 质量基准（bench-quality）
+
+`bench-kb` 量的是"导入多贵、检索多快"。这个量的是**玩起来像不像原著**：模型读到的上下文有没有原文依据、会不会剧透、同一个问题换个问法是否还在同一处。
+
+```bash
+node scripts/bench-quality.js kb.json --novel novel.txt --samples 60
+node scripts/bench-quality.js kb.json --novel novel.txt --out quality.json
+```
+
+需要 Node ≥ 22.5。`--novel` 可选：不给就退化成"卡片自带引文"，给上才校验"引文真的在原文里、且在该章"。
+
+## 指标
+
+| 指标 | 含义 | 为什么影响沉浸 |
+| --- | --- | --- |
+| `coverage_chapters` | 有卡的章 / 总章 | 没有卡的章，玩家一进去就是空白 |
+| `cards_with_quote` | 带原文摘录的卡占比 | 模型有原句可引，语气和细节才不会飘 |
+| `retrieval_hit5` | 按名字提问，5 条内能找到这张卡 | 玩家提一个名字，系统得接得住 |
+| `grounded_top1` | 置顶结果含"能在原文中找到"的句子 | 最显眼的那条要是真有依据 |
+| `chapter_placement` | 引文所在章 == 卡片声明章 | 张冠李戴比没有更糟 |
+| `spoiler_leak_chunks` | 检索结果本身越过章节上限 | 直接剧透，最伤沉浸 |
+| `spoiler_leak_parents` | 读回的父块里含更晚章节 | 间接剧透：模型读块时看到未来 |
+| `stability_top5` | 三种问法的 top5 重叠度 | 换个说法就查到别处，玩家会觉得系统"听不懂" |
+| `machine_named_cards` | 名字是构建器占位符的卡 | 卡名像 `未命名-legacy:event:CH_1:…` 时，展示给玩家的是噪声 |
+
+## 判定
+
+`ok` 为假的条件（可加 `--no-gate` 只看数）：`retrieval_hit5 ≥ 0.8`、`grounded_top1 ≥ 0.5`、`spoiler_leak_chunks == 0`、`chapter_placement ≥ 0.85`、`stability_top5 ≥ 0.6`。
+
+## 本次实测：gur-kb-final（60 个场景，对原文 2,337 章）
+
+| 指标 | 值 | 读法 |
+| --- | --- | --- |
+| coverage_chapters | **98.9%** | 2,331 / 2,356 章有卡 |
+| cards_with_quote | 66.1% | 三分之二的卡能引原句 |
+| retrieval_hit5 | 73.3% | 仍有约四分之一的名字查不到 |
+| grounded_top1 | 60.0% | 置顶结果六成带可核验原句 |
+| chapter_placement | **97.2%** | 引文与章节基本对得上 |
+| spoiler_leak_chunks | **5.0%** | 检索结果里仍有 5% 越过了上限 |
+| spoiler_leak_parents | **80.0%** | 父块几乎总会带出更晚的章 |
+| stability_top5 | 40.8% | 换问法落点变化大 |
+| machine_named_cards | **19,676（49.2%）** | 近一半卡的名字是占位符 |
+
+三个最值得动的地方，按性价比：
+
+1. **父块按章节上限裁剪**（客户端 `readParents` 加一个 maxChapter，过滤掉更晚的卡）。这一条直接把 80% 的间接剧透降到接近 0，改动约 20 行。
+2. **占位卡名人性化**（构建期把 `未命名-legacy:event:CH_1:…` 换成正文第一个短句）。近一半卡名是噪声，直接影响模型引用和玩家观感。
+3. **检索结果硬过滤越界卡**（现在是 ×0.05 降到几乎不出现，但仍有 5% 冒头；改成带上限时直接排除，或返回前再筛一次）。
+
+`fidelity_numbers` 在本次样本里为 `null`：置顶卡正文里没有数字，无法构成样本。

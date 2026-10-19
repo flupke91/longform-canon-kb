@@ -291,7 +291,9 @@ function runQueries(db, children, queries, options) {
     const query = typeof item === 'string' ? item : item.query;
     const expected = typeof item === 'string' ? [] : (item.expect_any || []);
     const terms = tokenize(query);
-    const currentChapter = chapterOfQuery(query);
+    const currentChapter = typeof item === 'object' && item.currentChapter !== undefined
+      ? Number(item.currentChapter)
+      : chapterOfQuery(query);
     const entitySet = new Set(terms);
     const totalPossible = terms.reduce((sum, term) => sum + termWeight(term, entitySet), 0);
 
@@ -361,6 +363,7 @@ function runQueries(db, children, queries, options) {
       query,
       ms: Number(elapsedMs.toFixed(2)),
       top: deduped.slice(0, TOP_K).map(hit => hit.cardId),
+      parentIds: deduped.slice(0, TOP_K).map(hit => hit.parentId),
       hit: rank >= 0,
       rank: rank >= 0 ? rank + 1 : null,
     });
@@ -502,4 +505,20 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  buildBlocks,
+  openDatabase,
+  importInto,
+  buildFts,
+  runQueries,
+  tokenize,
+  chapterOfQuery,
+  chapterLookup,
+  quoteOf,
+  TRAIN_SECTIONS,
+  TOP_K,
+};
