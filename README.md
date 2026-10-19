@@ -43,7 +43,7 @@ git clone https://github.com/<你>/longform-canon-kb ~/.agents/skills/longform-c
 
 ### 2. 只用门禁脚本
 
-八个脚本零依赖，Node 18+ 即可运行：
+九个脚本零依赖，Node 18+ 即可运行：
 
 ```bash
 # 结构与引用门禁（自动识别桌面版 / 卡片路由版）
@@ -67,6 +67,10 @@ node scripts/migrate-kb.js kb.json --out migrated.json --sort-sections --backfil
 # 原文补全：先导工作清单，再把抽取结果合并回库（合并只走脚本）
 node scripts/export-worklist.js kb.json --out-dir worklist/
 node scripts/apply-patch.js kb.json --ch ch.jsonl --quotes quotes.jsonl --out out.json
+
+# 性能基准：导入耗时 / 体积 / 检索延迟与召回，可与基线比对（Node >= 22.5）
+node scripts/bench-kb.js kb.json --out bench.json
+node scripts/bench-kb.js kb.json --baseline evals/bench/baseline-gur-final.json
 ```
 
 脚本接受 `<kb.json>` 作为第一个位置参数（flag 可以写在路径前面），输出 JSON 到 stdout，**非零退出码表示门禁失败**，可直接接进 CI。
