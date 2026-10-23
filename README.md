@@ -25,7 +25,7 @@
 
 ![架构总览](assets/architecture.svg)
 
-（矢量图 ssets/architecture.svg，位图 ssets/architecture.png）
+（矢量图 assets/architecture.svg，位图 assets/architecture.png）
 
 分层、数据流、运行时检索模型与扩展点的完整说明见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
 
@@ -36,14 +36,14 @@
 把整个仓库放进 skill 目录即可：
 
 ```bash
-git clone https://github.com/<你>/longform-canon-kb ~/.agents/skills/longform-canon-kb
+git clone https://github.com/flupke91/longform-canon-kb ~/.agents/skills/longform-canon-kb
 ```
 
 之后当你提到"用长篇小说做 AI 剧情游戏""知识库检索不准""把 KB 压到 15MB"这类需求时，主控 Agent 会加载 `SKILL.md` 并按七阶段流程执行。
 
 ### 2. 只用门禁脚本
 
-九个脚本零依赖，Node 18+ 即可运行：
+门禁脚本零依赖（当前 11 个，见 `scripts/`），Node 18+ 即可运行：
 
 ```bash
 # 结构与引用门禁（自动识别桌面版 / 卡片路由版）
