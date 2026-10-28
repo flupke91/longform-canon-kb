@@ -1,0 +1,322 @@
+[
+  {
+    "query": "贾贵",
+    "expect_any": [
+      "m005040"
+    ],
+    "section": "character_states",
+    "ch": 44
+  },
+  {
+    "query": "魏央",
+    "expect_any": [
+      "m005303"
+    ],
+    "section": "character_states",
+    "ch": 305
+  },
+  {
+    "query": "邬夜",
+    "expect_any": [
+      "m005716"
+    ],
+    "section": "character_states",
+    "ch": 539
+  },
+  {
+    "query": "岐山老人",
+    "expect_any": [
+      "m006060"
+    ],
+    "section": "character_states",
+    "ch": 832
+  },
+  {
+    "query": "商负屃",
+    "expect_any": [
+      "m006264"
+    ],
+    "section": "character_states",
+    "ch": 965
+  },
+  {
+    "query": "萧山",
+    "expect_any": [
+      "m006342"
+    ],
+    "section": "character_states",
+    "ch": 997
+  },
+  {
+    "query": "浪子秋提及",
+    "expect_any": [
+      "m006453"
+    ],
+    "section": "character_states",
+    "ch": 1059
+  },
+  {
+    "query": "廿二一方",
+    "expect_any": [
+      "m006635"
+    ],
+    "section": "character_states",
+    "ch": 1192
+  },
+  {
+    "query": "施正义",
+    "expect_any": [
+      "m006724"
+    ],
+    "section": "character_states",
+    "ch": 1233
+  },
+  {
+    "query": "翼黑霆",
+    "expect_any": [
+      "m006878"
+    ],
+    "section": "character_states",
+    "ch": 1354
+  },
+  {
+    "query": "商心慈",
+    "expect_any": [
+      "m007061"
+    ],
+    "section": "character_states",
+    "ch": 1548
+  },
+  {
+    "query": "九月仙子",
+    "expect_any": [
+      "m007195"
+    ],
+    "section": "character_states",
+    "ch": 1648
+  },
+  {
+    "query": "翼浩方",
+    "expect_any": [
+      "m007325"
+    ],
+    "section": "character_states",
+    "ch": 1706
+  },
+  {
+    "query": "羊枯",
+    "expect_any": [
+      "m007496"
+    ],
+    "section": "character_states",
+    "ch": 1790
+  },
+  {
+    "query": "土基",
+    "expect_any": [
+      "m007799"
+    ],
+    "section": "character_states",
+    "ch": 1958
+  },
+  {
+    "query": "方正",
+    "expect_any": [
+      "m008100"
+    ],
+    "section": "character_states",
+    "ch": 2112
+  },
+  {
+    "query": "左夜灰",
+    "expect_any": [
+      "m008528"
+    ],
+    "section": "character_states",
+    "ch": 2284
+  },
+  {
+    "query": "花豕蛊",
+    "expect_any": [
+      "m024449"
+    ],
+    "section": "items_and_gu",
+    "ch": 81
+  },
+  {
+    "query": "饭袋草蛊",
+    "expect_any": [
+      "m024822"
+    ],
+    "section": "items_and_gu",
+    "ch": 211
+  },
+  {
+    "query": "霜息蛊",
+    "expect_any": [
+      "m025108"
+    ],
+    "section": "items_and_gu",
+    "ch": 313
+  },
+  {
+    "query": "石人奴隶",
+    "expect_any": [
+      "m025536"
+    ],
+    "section": "items_and_gu",
+    "ch": 422
+  },
+  {
+    "query": "云索蛊",
+    "expect_any": [
+      "m025911"
+    ],
+    "section": "items_and_gu",
+    "ch": 530
+  },
+  {
+    "query": "鸿运齐天蛊",
+    "expect_any": [
+      "m026326"
+    ],
+    "section": "items_and_gu",
+    "ch": 644
+  },
+  {
+    "query": "岐山老人之毒",
+    "expect_any": [
+      "m027024"
+    ],
+    "section": "items_and_gu",
+    "ch": 832
+  },
+  {
+    "query": "舍利金刚劫",
+    "expect_any": [
+      "m027688"
+    ],
+    "section": "items_and_gu",
+    "ch": 1006
+  },
+  {
+    "query": "至尊仙胎蛊",
+    "expect_any": [
+      "m028350"
+    ],
+    "section": "items_and_gu",
+    "ch": 1184
+  },
+  {
+    "query": "梦魇魔驹",
+    "expect_any": [
+      "m028787"
+    ],
+    "section": "items_and_gu",
+    "ch": 1293
+  },
+  {
+    "query": "蓝海",
+    "expect_any": [
+      "m029429"
+    ],
+    "section": "items_and_gu",
+    "ch": 1473
+  },
+  {
+    "query": "盐沙传说",
+    "expect_any": [
+      "m030057"
+    ],
+    "section": "items_and_gu",
+    "ch": 1635
+  },
+  {
+    "query": "军团蚁",
+    "expect_any": [
+      "m030916"
+    ],
+    "section": "items_and_gu",
+    "ch": 1827
+  },
+  {
+    "query": "电脑蛊",
+    "expect_any": [
+      "m032013"
+    ],
+    "section": "items_and_gu",
+    "ch": 2131
+  },
+  {
+    "query": "希望蛊",
+    "expect_any": [
+      "m033543"
+    ],
+    "section": "items_and_gu",
+    "ch": 4
+  },
+  {
+    "query": "方源",
+    "expect_any": [
+      "m033655"
+    ],
+    "section": "items_and_gu",
+    "ch": 4
+  },
+  {
+    "query": "白骨山",
+    "expect_any": [
+      "m034270"
+    ],
+    "section": "locations",
+    "ch": 213
+  },
+  {
+    "query": "气运",
+    "expect_any": [
+      "m034587"
+    ],
+    "section": "locations",
+    "ch": 680
+  },
+  {
+    "query": "冰原深处",
+    "expect_any": [
+      "m034798"
+    ],
+    "section": "locations",
+    "ch": 979
+  },
+  {
+    "query": "天庭仙墓",
+    "expect_any": [
+      "m034978"
+    ],
+    "section": "locations",
+    "ch": 1228
+  },
+  {
+    "query": "盘丝洞窟",
+    "expect_any": [
+      "m035050"
+    ],
+    "section": "locations",
+    "ch": 1334
+  },
+  {
+    "query": "掠影地沟",
+    "expect_any": [
+      "m035184"
+    ],
+    "section": "locations",
+    "ch": 1595
+  },
+  {
+    "query": "战场变化",
+    "expect_any": [
+      "m035322"
+    ],
+    "section": "locations",
+    "ch": 1830
+  }
+]

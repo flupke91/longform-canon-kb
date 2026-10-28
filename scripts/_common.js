@@ -75,6 +75,50 @@ function allCards(kb) {
   if (!isMobileKb(kb)) return [];
   const catalog = kb.mobile_card_catalog || [];
   const cards = [];
+  if (catalog.length > 0) {
+    // `mobile_router` postings and `mobile_card_catalog` share one ordinal space:
+    // the catalog row's position. Building the card list in section-concatenation
+    // order instead silently remaps every posting, so queries resolve to the
+    // wrong cards while still reporting zero empty results.
+    const byId = new Map();
+    for (const section of mobileSections(kb)) {
+      for (const raw of kb[section] || []) {
+        if (raw && raw._id !== undefined) byId.set(String(raw._id), { raw, section });
+      }
+    }
+    for (const rawCard of kb.cards || []) {
+      if (rawCard && rawCard._id !== undefined) byId.set(String(rawCard._id), { raw: rawCard, section: 'cards' });
+    }
+    for (const entry of catalog) {
+      const ordinal = cards.length;
+      const row = Array.isArray(entry) ? entry : null;
+      const id = String(row ? row[1] : entry && entry.card_id ? entry.card_id : `#${ordinal}`);
+      const hit = byId.get(id);
+      cards.push({
+        ordinal,
+        id,
+        kind: (hit && hit.raw.kind) ?? (row ? row[2] : undefined) ?? (hit && hit.section) ?? 'unknown',
+        rank: (row ? row[3] : undefined) ?? (hit && hit.raw._rank) ?? 0,
+        substantive: row && row[4] !== undefined ? row[4] !== 0 : null,
+        section: hit ? hit.section : 'unknown',
+        raw: hit ? hit.raw : {}
+      });
+      if (hit) byId.delete(id);
+    }
+    for (const left of byId.values()) {
+      const ordinal = cards.length;
+      cards.push({
+        ordinal,
+        id: String(left.raw._id),
+        kind: left.raw.kind ?? left.section,
+        rank: left.raw._rank ?? 0,
+        substantive: null,
+        section: left.section,
+        raw: left.raw
+      });
+    }
+    return cards;
+  }
   const push = (raw, section) => {
     const ordinal = cards.length;
     cards.push({
